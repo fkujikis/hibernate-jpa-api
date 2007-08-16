@@ -1,0 +1,97 @@
+<!--
+
+	EJB API build script.
+
+	Emmanuel Bernard
+
+-->
+
+<project name="Hibernate" default="jar" basedir=".">
+
+	<!-- Give user a chance to override without editing this file or typing -D -->
+	<property file="build.properties"/>
+	<property file="${user.home}/.ant.properties"/>
+
+	<!-- Name of project and version, used to create filenames -->
+	<property name="name" value="ejb"/>
+	<property name="version" value="3.0-edr1"/>
+
+	<!-- set global properties for this build -->
+	<property name="src.dir" value="src"/>
+	<property name="build.dir" value="build"/>
+    <property name="metainf.dir" value="etc"/>
+	<property name="classes.dir" value="${build.dir}/classes"/>
+	<property name="jar.name" value="${name}-${version}"/>
+
+	<property name="javac.debug" value="on"/>
+	<property name="javac.optimize" value="off"/>
+
+	<patternset id="src.files">
+		<!-- include everything we want in the src directory
+			that we didn't want in the jar itself -->
+		<include name="**/*.java"/>
+		<include name="META-INF/ra.xml"/>
+	</patternset>
+
+
+	<!-- ############################ Targets #############################-->
+
+	<target name="clean" description="Cleans up build and dist directories">
+		<delete dir="${build.dir}"/>
+	</target>
+
+	<target name="init" description="Initialize the build">
+		<tstamp>
+			<format property="subversion" pattern="yyyy-MM-dd hh:mm:ss"/>
+		</tstamp>
+		<echo message="Build ${name}-${version} (${subversion})"/>
+
+		<mkdir dir="${classes.dir}"/>
+
+		<available file="${jdk15.home}" type="dir" property="jdk15.available"/>
+	    <fail unless="jdk15.available">
+  		 Could not find ${jdk15.home}. jdk15.home must point to a JDK 1.5 directory.
+    	</fail>
+	</target>
+
+	<target name="compile" depends="init" description="Compile the Java source code">
+		<available
+			classname="org.eclipse.core.launcher.Main"
+			property="build.compiler"
+			value="org.eclipse.jdt.core.JDTCompilerAdapter"
+			classpath="${java.class.path}"/>
+		<javac
+            compiler="extJavac"
+            executable="${jdk15.home}/bin/javac"
+			destdir="${classes.dir}"
+			debug="${javac.debug}"
+			optimize="${javac.optimize}"
+			nowarn="on"
+            source="1.5">
+          <bootclasspath>
+            <fileset dir="${jdk15.home}/jre/lib" includes="*.jar"/>
+          </bootclasspath>
+          <src path="${src.dir}"/>
+        </javac>
+	</target>
+
+
+	<target name="jar" depends="compile" description="Build the distribution .jar file">
+		<jar jarfile="${build.dir}/${jar.name}.jar" basedir="${classes.dir}">
+			<include name="javax/ejb/**/*.class"/>
+            <manifest>
+                <attribute name="Built-By" value="hibernate.org"/>
+                <attribute name="Specification-Title" value="EJB"/>
+                <attribute name="Specification-Version" value="${version}"/>
+                <attribute name="Specification-Vendor" value="Sun Microsystems, Inc."/>
+                <attribute name="Implementation-Title" value="EJB"/>
+                <attribute name="Implementation-Version" value="${version} ${TODAY}"/> 
+                <attribute name="Implementation-Vendor" value="hibernate.org"/>
+            </manifest>
+            <metainf dir="${basedir}/${metainf.dir}">
+                <include name="**/license.txt"/>
+            </metainf>
+		</jar>
+	</target>
+
+</project>
