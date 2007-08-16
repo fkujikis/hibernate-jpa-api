@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="search-query">
+  <title>Querying</title>
+
+  <para>The second most important capability of <productname>Hibernate Search
+  </productname> is the ability to execute a Lucene query and retrieve
+  entities managed by an Hibernate session, providing the power of Lucene
+  without living the Hibernate paradygm, and giving another dimension to the
+  Hibernate classic search mechanisms (HQL, Criteria query, native SQL
+  query).</para>
+
+  <para>To access the <productname>Hibernate Search</productname> querying
+  facilities, you have to use an Hibernate
+  <classname>FullTextSession</classname> . A SearchSession wrap an regular
+  <classname>org.hibernate.Session</classname> to provide query and indexing
+  capabilities.</para>
+
+  <programlisting>Session session = sessionFactory.openSession();
+...
+FullTextSession fullTextSession = Search.createFullTextSession(session);    </programlisting>
+
+  <para>The search facility is built on native Lucene queries.</para>
+
+  <programlisting>org.apache.lucene.queryParser.QueryParser parser = new QueryParser("title", new StopAnalyzer() );
+
+org.apache.lucene.search.Query luceneQuery = parser.parse( "summary:Festina Or brand:Seiko" );
+<emphasis role="bold">org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery( luceneQuery );
+        </emphasis>
+
+List result = fullTextQuery.list(); //return a list of managed objects    </programlisting>
+
+  <para>The Hibernate query built on top of the Lucene query is a regular
+  <literal>org.hibernate.Query</literal> , you are is the same paradygm as the
+  other Hibernate query facilities (HQL, Native or Criteria). The regular
+  <literal>list()</literal> , <literal>uniqueResult()</literal> ,
+  <literal>iterate()</literal> and <literal>scroll()</literal> can be
+  used.</para>
+
+  <para>If you expect a reasonnable result number and expect to work on all of
+  them, <methodname>list()</methodname> or
+  <methodname>uniqueResult()</methodname> are recommanded.
+  <methodname>list()</methodname> work best if the entity
+  <literal>batch-size</literal> is set up properly. Note that Hibernate Seach
+  has to process all Lucene Hits elements when using
+  <methodname>list()</methodname> , <methodname>uniqueResult()</methodname>
+  and <methodname>iterate()</methodname> . If you wish to minimize Lucene
+  document loading, <methodname>scroll()</methodname> is more appropriate,
+  Don't forget to close the <classname>ScrollableResults</classname> object
+  when you're done, since it keeps Lucene resources.</para>
+
+  <para>An efficient way to work with queries is to use pagination. The
+  pagination API is exactly the one available in
+  <classname>org.hibernate.Query</classname> :</para>
+
+  <programlisting><emphasis role="bold">org.hibernate.Query fullTextQuery = fullTextSession.createFullTextQuery( luceneQuery );
+        </emphasis>
+fullTextQuery.setFirstResult(30);
+fullTextQuery.setMaxResult(20);
+fullTextQuery.list(); //will return a list of 20 elements starting from the 30th    </programlisting>
+
+  <para>Only the relevant Lucene Documents are accessed.</para>
+</chapter>

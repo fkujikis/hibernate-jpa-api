@@ -1,0 +1,7 @@
+Hibernate Validator Changelog
+=============================
+
+3.2.2.GA (xx-02-2007)
+---------------------
+
+Initial release as a standalone product (see Hibernate Annotations changelog for previous informations)

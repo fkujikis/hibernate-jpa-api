@@ -1,0 +1,36 @@
+<!--
+
+  HibernateExt ANT distribution build script.
+
+  TODO: This is a very "Raw" build solution. Need to find a better manageble way
+        to handle HibernateExt build.
+
+-->
+
+<project name="HibernateExt" default="dist" basedir=".">
+
+  <!-- Give user a chance to override without editing this file
+     (and without typing -D each time it compiles it) -->
+  <property file="build.properties"/>
+  <property file="${user.home}/.ant.properties"/>
+
+  <!-- Name of project and version, used to create filenames -->
+  <property name="Name" value="Hibernate Extensions"/>
+  <property name="name" value="hibernate-extensions"/>
+  <property name="version" value="3.0"/>
+
+  <import file="common/common-build.xml"/>
+
+  <target name="dist" depends="" description="Build everything">
+	<subant inheritall="false">
+      <fileset dir="." includes="*/build.xml" excludes="avalon/build.xml,*eclipse*/build.xml"/>
+	</subant>
+  </target>
+
+  <target name="clean">
+	<subant target="clean" inheritall="false">
+		<fileset dir="." includes="*/build.xml" excludes="avalon/build.xml"/>
+	</subant>  	
+  </target>
+	
+</project>

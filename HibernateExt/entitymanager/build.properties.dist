@@ -1,0 +1,13 @@
+common.dir=.
+src.dir=src
+test.dir=test
+resources.dir=resources
+testresources.dir=test-resources
+hibernate-core.home=../hibernate-3.2
+
+
+#locally present jars
+jpa-api.jar=./lib/ejb3-persistence.jar
+validator.jar=./lib/hibernate-validator.jar
+commons-annotations.jar=./lib/hibernate-commons-annotations.jar
+annotations.jar=./lib/hibernate-annotations.jar

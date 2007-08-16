@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
+        "../../../../../Hibernate3/doc/reference/support/docbook-dtd/docbookx.dtd" [
+        <!ENTITY architecture SYSTEM "modules/architecture.xml">
+        <!ENTITY configuration SYSTEM "modules/configuration.xml">
+        <!ENTITY mapping SYSTEM "modules/mapping.xml">
+        <!ENTITY query SYSTEM "modules/query.xml">
+        <!ENTITY batchindex SYSTEM "modules/batchindex.xml">
+        ]>
+<book lang="en">
+  <bookinfo>
+    <title>Hibernate Search</title>
+    <subtitle>Apache <trademark>Lucene</trademark>
+  Integration</subtitle>
+
+    <subtitle>Reference Guide</subtitle>
+
+    <releaseinfo>3.2.2.beta1</releaseinfo>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/hibernate_logo_a.png" format="png"/>
+      </imageobject>
+    </mediaobject>
+  </bookinfo>
+
+  <toc></toc>
+
+  <preface id="preface" revision="2">
+    <title>Preface</title>
+
+    <para>Full text search engines like <productname>Apache Lucene</productname>
+        are a very powerful technology to
+bring free text/efficient queries to applications. If suffers several mismatches
+when dealing with a object domain model (keeping the index up to date, mismatch
+between the index structure and the domain model, querying mismatch...)
+Hibernate Search indexes your domain model thanks to a few annotations, takes
+care of the database / index synchronization and brings you back regular managed
+objects from free text queries.
+Hibernate Search is using <ulink url="http://lucene.apache.org">Apache Lucene</ulink>
+under the cover.</para>
+
+  <para>Hibernate Search is a work in progress and new features are cooking in
+  this area. So expect some compatibility changes in subsequent
+  versions.</para>
+  </preface>
+
+    &architecture;
+
+    &configuration;
+
+    &mapping;
+
+    &query;
+
+    &batchindex;
+</book>

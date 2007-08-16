@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering SYSTEM "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
+<hibernate-reverse-engineering>
+
+<!-- This one assumes set and many-to-one is exclude=false -->
+    <table name="EMPLOYEE">
+		<foreign-key constraint-name="EMPLOYEE_MANAGER"> 
+			<many-to-one property="manager"/>
+			<set exclude="true"/>
+		</foreign-key>
+	</table> 
+	
+	<table name="PROJECT">
+	    <foreign-key constraint-name="PROJECT_MANAGER">
+	    	<many-to-one exclude="true"/>
+	    	<set property="managedProjects"/>
+	    </foreign-key>
+	</table>	
+	
+	
+</hibernate-reverse-engineering>
