@@ -19,7 +19,7 @@ import javax.persistence.spi.PersistenceProvider;
  */
 public class Persistence {
 
-	public static String PERSISTENCE_PROVIDER = PersistenceProvider.class.getName();
+	public static final String PERSISTENCE_PROVIDER = PersistenceProvider.class.getName();
 
 	protected static final Set<PersistenceProvider> providers = new HashSet<PersistenceProvider>();
 
