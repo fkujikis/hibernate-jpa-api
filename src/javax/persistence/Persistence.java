@@ -19,7 +19,8 @@ import javax.persistence.spi.PersistenceProvider;
  */
 public class Persistence {
 
-	public static final String PERSISTENCE_PROVIDER = PersistenceProvider.class.getName();
+	//typo intended because it leaked into the JPA 1 spec. Do not use this constant.
+	public static final java.lang.String PERSISTENCE_PROVIDER = "javax.persistence.spi.PeristenceProvider";
 
 	protected static final Set<PersistenceProvider> providers = new HashSet<PersistenceProvider>();
 
