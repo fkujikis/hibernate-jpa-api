@@ -3,7 +3,7 @@
 package javax.persistence;
 
 /**
- * Type used to indicate a specific mapping of Date or Calendar.
+ * Type used to indicate a specific mapping of {@link java.util.Date} or {@link java.util.Calendar).
  */
 public enum TemporalType {
 	/**
