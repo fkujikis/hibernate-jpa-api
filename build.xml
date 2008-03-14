@@ -15,7 +15,7 @@
 
 	<!-- Name of project and version, used to create filenames -->
 	<property name="name" value="ejb3-persistence"/>
-	<property name="version" value="3.0 Final Release"/>
+	<property name="version" value="3.0 Final Release (1.0.1.GA)"/>
 
 	<!-- set global properties for this build -->
 	<property name="src.dir" value="src"/>
