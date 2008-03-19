@@ -124,11 +124,18 @@
           <!-- patternset refid="meta.files" / -->
         </jar>
 
+        <artifact:pom id="maven.project" file="${pom.file}" />
+
+        <artifact:install file="${build.dir}/${jar.name}.jar">
+            <pom refid="maven.project"/>
+        </artifact:install>
+        
         <artifact:deploy file="${build.dir}/${jar.name}.jar">
-          <pom file="${pom.file}" />
+          <pom refid="maven.project" />
           <remoteRepository refId="offline.repository.jboss.org">
           </remoteRepository>
           <attach file="${src.jar}" classifier="sources" />
+            <attach file="${build.dir}/${jar.name}.jar" classifier="" />
         </artifact:deploy>
     </target>
 
