@@ -3,7 +3,7 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:noNamespaceSchemaLocation=
                   "http://www.jayasoft.org/misc/ivy/ivy.xsd">
-    <info organisation="org.hibernate" module="ejb3-persistence" revision="1.0.1.GA" status="release"/>
+    <info organisation="org.hibernate" module="ejb3-persistence" revision="1.0.2.GA" status="release"/>
     <publications>
         <artifact name="ejb3-persistence" type="jar" />
     </publications>

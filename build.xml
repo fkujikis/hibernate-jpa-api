@@ -7,7 +7,8 @@
 -->
 
 <project name="EJB-API" default="jar" basedir="."
-        xmlns:ivy="antlib:fr.jayasoft.ivy.ant">
+        xmlns:ivy="antlib:fr.jayasoft.ivy.ant"
+        xmlns:artifact="urn:maven-artifact-ant">
 
 	<!-- Give user a chance to override without editing this file or typing -D -->
 	<property file="build.properties"/>
@@ -15,16 +16,20 @@
 
 	<!-- Name of project and version, used to create filenames -->
 	<property name="name" value="ejb3-persistence"/>
-	<property name="version" value="3.0 Final Release (1.0.1.GA)"/>
+	<property name="version" value="3.0 Final Release (1.0.2.GA)"/>
 
 	<!-- set global properties for this build -->
 	<property name="src.dir" value="src"/>
 	<property name="build.dir" value="build"/>
     <property name="metainf.dir" value="etc"/>
 	<property name="classes.dir" value="${build.dir}/classes"/>
-	<property name="jar.name" value="${name}"/>
+    <property name="jar.name" value="${name}"/>
 
-	<property name="javac.debug" value="on"/>
+    <!-- maven properties -->
+    <property name="src.jar" value="${build.dir}/src.jar"/>
+    <property name="pom.file" value="pom.xml"/>
+
+    <property name="javac.debug" value="on"/>
 	<property name="javac.optimize" value="off"/>
 
 	<patternset id="src.files">
@@ -40,8 +45,14 @@
 	<path id="ivy.lib.path">
 		<fileset dir="${ivy.jar.dir}" includes="*.jar"/>
 	</path>
-	<taskdef resource="fr/jayasoft/ivy/ant/antlib.xml"
+    <path id="maven-ant-tasks.path" path="${ivy.jar.dir}/maven-ant-tasks.jar" />
+    <taskdef resource="fr/jayasoft/ivy/ant/antlib.xml"
 			  uri="antlib:fr.jayasoft.ivy.ant" classpathref="ivy.lib.path"/>
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+             uri="urn:maven-artifact-ant" 
+             classpathref="maven-ant-tasks.path" />
+
+    <artifact:remoteRepository id="offline.repository.jboss.org" url="file://${offline.repository.jboss.org}" />
 
 
     <!-- ############################ Targets #############################-->
@@ -104,6 +115,21 @@
             pubdate="${now}"
             status="integration"
         />
+    </target>
+
+    <target name="deploy" depends="jar">
+        <jar jarfile="${src.jar}" basedir="${src.dir}">
+          <include name="**/*.java" />
+          <exclude name="**/test/*.java" />
+          <!-- patternset refid="meta.files" / -->
+        </jar>
+
+        <artifact:deploy file="${build.dir}/${jar.name}.jar">
+          <pom file="${pom.file}" />
+          <remoteRepository refId="offline.repository.jboss.org">
+          </remoteRepository>
+          <attach file="${src.jar}" classifier="sources" />
+        </artifact:deploy>
     </target>
 
     <target name="javadoc" description="Compile the Javadoc API documentation">
