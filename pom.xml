@@ -1,15 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <modelVersion>4.0.0</modelVersion>
+    <groupId>javax.persistence</groupId>
+    <artifactId>jpa-api</artifactId>
+    <version>2.0.Beta1</version>
+    <packaging>jar</packaging>
+    <name>Persistence API</name>
 
-  <groupId>org.hibernate</groupId>
-  <artifactId>ejb3-persistence</artifactId>
-  <packaging>pom</packaging>
-  <version>1.0.2.GA</version>
+    <description>Persistence API. </description>
 
-  <name>Java Persistence API</name>
-  <description>Java Persistence API</description>
-  <url>http://www.hibernate.org</url>
+    <inceptionYear>2007</inceptionYear>
+
+    <licenses>
+        <license>
+            <url>license.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:svn:https://svn.jboss.org/repos/hibernate/jpa-api/trunk</connection>
+        <url>http://fisheye.jboss.org/browse/Hibernate/jpa-api/trunk/</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>epbernard</id>
+            <name>Emmanuel Bernard</name>
+            <email>emmanuel@hibernate.org</email>
+            <organization>JBoss, a division of Red Hat</organization>
+            <url>http://in.relation.to/Bloggers/Emmanuel</url>
+        </developer>
+        <developer>
+            <id>hardy.ferentschik</id>
+            <name>Hardy Ferentschik</name>
+            <email>hferents@redhat.com</email>
+            <organization>JBoss, a division of Red Hat</organization>
+            <url>http://in.relation.to/Bloggers/Hardy</url>
+        </developer>
+    </developers>
+
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+                <version>1.0-beta-2</version>
+            </extension>
+        </extensions>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.0.2</version>
+                    <configuration>
+                        <source>1.5</source>
+                        <target>1.5</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.2</version>
+                    <configuration>
+                        <archive>
+                            <manifestEntries>
+                                <Built-By>hibernate.org</Built-By>
+                                <Specification-Title>EJB 3.0</Specification-Title>
+                                <Specification-Version>${pom.version}</Specification-Version>
+                                <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
+                                <Implementation-Version>${pom.version}</Implementation-Version>
+                                <Implementation-Vendor>hibernate.org</Implementation-Vendor>
+                                <Implementation-Title>EJB</Implementation-Title>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.5</version>
+                    <configuration>
+                        <packagenames>javax.persistence.*</packagenames> 
+                        <use>true</use>
+                        <protected>true</protected>
+                        <version>true</version>
+                        <overview>${basedir}/src/main/javadoc/package.html</overview>
+                        <windowtitle>EJB 3.0 Persistence API Documentation</windowtitle>
+                        <doctitle>EJB 3.0 Persistence API Documentation</doctitle>
+                        <link>http://java.sun.com/j2se/1.5/docs/api</link>
+                        <stylesheetfile>${basedir}/src/main/javadoc/jdstyle.css</stylesheetfile>
+                    </configuration>                  
+                </plugin>
+                <plugin>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <configuration>
+                        <releaseProfiles>release</releaseProfiles>
+                        <goals>package</goals>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    
+    <distributionManagement>
+        <repository>
+            <!-- Copy the dist to the local checkout of the JBoss maven2 repo ${maven.repository.root} -->
+            <!-- It is anticipated that ${maven.repository.root} be set in user's settings.xml -->
+            <!-- todo : replace this with direct svn access once the svnkit providers are available -->
+            <id>repository.jboss.org</id>
+            <url>file://${maven.repository.root}</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots.jboss.org</id>
+            <name>JBoss Snapshot Repository</name>
+            <url>dav:https://snapshots.jboss.org/maven2</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
