@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
     <name>Persistence API</name>
 
-    <description>Persistence API. </description>
+    <description>JSR 317: Java Persistence API 2.0</description>
 
     <inceptionYear>2007</inceptionYear>
 
