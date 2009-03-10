@@ -1,9 +1,5 @@
-/* $Id$
- * JBoss Inc
- *
- * Distributable under LGPL license.
- * See terms of license at gnu.org.
- */
+// $Id$
+// EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence;
 
 import java.lang.annotation.ElementType;

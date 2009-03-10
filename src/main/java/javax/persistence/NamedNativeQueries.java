@@ -1,5 +1,5 @@
-//$Id$
-//EJB3 Specification Copyright 2004-2006 Sun Microsystems, Inc.
+// $Id$
+// EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence;
 
 import static java.lang.annotation.ElementType.TYPE;
