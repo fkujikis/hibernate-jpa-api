@@ -1,34 +1,28 @@
-// $Id: EntityManager.java 11171 2007-02-08 03:40:51Z epbernard $
+// $Id$
 package javax.persistence;
+
+import java.util.Map;
+import java.util.Set;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.metamodel.Metamodel;
 
 /**
  * Interface used to interact with the persistence context.
- *
- * An EntityManager instance is associated with a persistence context. A persistence context is a set of
- * entity instances in which for any persistent entity identity there is a unique entity instance.
- * Within the persistence context, the entity instances and their lifecycle are managed. This interface
- * defines the methods that are used to interact with the persistence context. The EntityManager API is
- * used to create and remove persistent entity instances, to find entities by their primary key, and to
- * query over entities.
- *
- * The set of entities that can be managed by a given EntityManager instance is defined by a persistence unit.
- * A persistence unit defines the set of all classes that are related or grouped by the application, and
- * which must be colocated in their mapping to a single database.
- *
- * @author Emmanuel Bernard
  */
 public interface EntityManager {
 	/**
-	 * Make an entity instance managed and persistent.
+	 * Make an instance managed and persistent.
 	 *
 	 * @param entity
+	 *
 	 * @throws EntityExistsException		if the entity already exists.
-	 *                                      (The EntityExistsException may be thrown when the persist
-	 *                                      operation is invoked, or the EntityExistsException or
-	 *                                      another PersistenceException may be thrown at commit
-	 *                                      time.)
-	 * @throws IllegalStateException if this EntityManager has been closed.
-	 * @throws IllegalArgumentException	 if not an entity
+	 *                                      (If the entity already exists, the EntityExistsException may
+	 *                                      be thrown when the persist operation is invoked, or the
+	 *                                      EntityExistsException or another PersistenceException may be
+	 *                                      thrown at flush or commit time.)
+	 * @throws IllegalArgumentException	 if the instance is not an
+	 *                                      entity
 	 * @throws TransactionRequiredException if invoked on a
 	 *                                      container-managed entity manager of type
 	 *                                      PersistenceContextType.TRANSACTION and there is
@@ -41,8 +35,9 @@ public interface EntityManager {
 	 * current persistence context.
 	 *
 	 * @param entity
-	 * @return the instance that the state was merged to
-	 * @throws IllegalStateException if this EntityManager has been closed
+	 *
+	 * @return the managed instance that the state was merged to
+	 *
 	 * @throws IllegalArgumentException	 if instance is not an
 	 *                                      entity or is a removed entity
 	 * @throws TransactionRequiredException if invoked on a
@@ -56,9 +51,9 @@ public interface EntityManager {
 	 * Remove the entity instance.
 	 *
 	 * @param entity
-	 * @throws IllegalStateException if this EntityManager has been closed
-	 * @throws IllegalArgumentException	 if not an entity
-	 *                                      or if a detached entity
+	 *
+	 * @throws IllegalArgumentException	 if the instance is not an
+	 *                                      entity or is a detached entity
 	 * @throws TransactionRequiredException if invoked on a
 	 *                                      container-managed entity manager of type
 	 *                                      PersistenceContextType.TRANSACTION and there is
@@ -68,18 +63,141 @@ public interface EntityManager {
 
 	/**
 	 * Find by primary key.
+	 * Search for an entity of the specified class and primary key.
+	 * If the entity instance is contained in the persistence context
+	 * it is returned from there.
 	 *
 	 * @param entityClass
 	 * @param primaryKey
+	 *
 	 * @return the found entity instance or null
 	 *         if the entity does not exist
-	 * @throws IllegalStateException if this EntityManager has been closed
+	 *
 	 * @throws IllegalArgumentException if the first argument does
-	 *                                  not denote an entity type or the second
-	 *                                  argument is not a valid type for that
-	 *                                  entity‚Äôs primary key
+	 *                                  not denote an entity type or the second argument is
+	 *                                  is not a valid type for that entity’s primary key or
+	 *                                  is null
 	 */
 	public <T> T find(Class<T> entityClass, Object primaryKey);
+
+	/**
+	 * Find by primary key, using the specified properties.
+	 * Search for an entity of the specified class and primary key.
+	 * If the entity instance is contained in the persistence context
+	 * it is returned from there.
+	 * If a vendor-specific property or hint is not recognized,
+	 * it is silently ignored.
+	 *
+	 * @param entityClass
+	 * @param primaryKey
+	 * @param properties standard and vendor-specific properties
+	 *
+	 * @return the found entity instance or null
+	 *         if the entity does not exist
+	 *
+	 * @throws IllegalArgumentException if the first argument does
+	 *                                  not denote an entity type or the second argument is
+	 *                                  is not a valid type for that entity’s primary key or
+	 *                                  is null
+	 */
+	public <T> T find(Class<T> entityClass, Object primaryKey,
+					  Map<String, Object> properties);
+
+	/**
+	 * Find by primary key and lock.
+	 * Search for an entity of the specified class and primary key
+	 * and lock it with respect to the specified lock type.
+	 * If the entity instance is contained in the persistence context
+	 * it is returned from there, and the effect of this method is
+	 * the same as if the lock method had been called on the entity.
+	 * If the entity is found within the persistence context and the
+	 * lock mode type is pessimistic and the entity has a version
+	 * attribute, the persistence provider must perform optimistic
+	 * version checks when obtaining the database lock. If these
+	 * checks fail, the OptimisticLockException will be thrown.
+	 * If the lock mode type is pessimistic and the entity instance
+	 * is found but cannot be locked:
+	 * - the PessimisticLockException will be thrown if the database
+	 * locking failure causes transaction-level rollback.
+	 * - the LockTimeoutException will be thrown if the database
+	 * locking failure causes only statement-level rollback
+	 *
+	 * @param entityClass
+	 * @param primaryKey
+	 * @param lockMode
+	 *
+	 * @return the found entity instance or null if the entity does
+	 *         not exist
+	 *
+	 * @throws IllegalArgumentException	 if the first argument does
+	 *                                      not denote an entity type or the second argument is
+	 *                                      not a valid type for that entity's primary key or
+	 *                                      is null
+	 * @throws TransactionRequiredException if there is no
+	 *                                      transaction and a lock mode other than NONE is set
+	 * @throws OptimisticLockException	  if the optimistic version
+	 *                                      check fails
+	 * @throws PessimisticLockException	 if pessimistic locking
+	 *                                      fails and the transaction is rolled back
+	 * @throws LockTimeoutException		 if pessimistic locking fails and
+	 *                                      only the statement is rolled back
+	 * @throws PersistenceException		 if an unsupported lock call
+	 *                                      is made
+	 */
+	public <T> T find(Class<T> entityClass, Object primaryKey,
+					  LockModeType lockMode);
+
+	/**
+	 * Find by primary key and lock, using the specified properties.
+	 * Search for an entity of the specified class and primary key
+	 * and lock it with respect to the specified lock type.
+	 * If the entity instance is contained in the persistence context
+	 * it is returned from there. If the entity is found
+	 * within the persistence context and the lock mode type
+	 * is pessimistic and the entity has a version attribute, the
+	 * persistence provider must perform optimistic version checks
+	 * when obtaining the database lock. If these checks fail,
+	 * the OptimisticLockException will be thrown.
+	 * If the lock mode type is pessimistic and the entity instance
+	 * is found but cannot be locked:
+	 * - the PessimisticLockException will be thrown if the database
+	 * locking failure causes transaction-level rollback.
+	 * - the LockTimeoutException will be thrown if the database
+	 * locking failure causes only statement-level rollback
+	 * If a vendor-specific property or hint is not recognized,
+	 * it is silently ignored.
+	 * Portable applications should not rely on the standard timeout
+	 * hint. Depending on the database in use and the locking
+	 * mechanisms used by the provider, the hint may or may not
+	 * be observed.
+	 *
+	 * @param entityClass
+	 * @param primaryKey
+	 * @param lockMode
+	 * @param properties standard and vendor-specific properties
+	 * and hints
+	 *
+	 * @return the found entity instance or null if the entity does
+	 *         not exist
+	 *
+	 * @throws IllegalArgumentException	 if the first argument does
+	 *                                      not denote an entity type or the second argument is
+	 *                                      not a valid type for that entity's primary key or
+	 *                                      is null
+	 * @throws TransactionRequiredException if there is no
+	 *                                      transaction and a lock mode other than NONE is set
+	 * @throws OptimisticLockException	  if the optimistic version
+	 *                                      check fails
+	 * @throws PessimisticLockException	 if pessimistic locking
+	 *                                      fails and the transaction is rolled back
+	 * @throws LockTimeoutException		 if pessimistic locking fails and
+	 *                                      only the statement is rolled back
+	 * @throws PersistenceException		 if an unsupported lock call
+	 *                                      is made
+	 */
+	public <T> T find(Class<T> entityClass, Object primaryKey,
+					  LockModeType lockMode,
+					  Map<String, Object> properties);
 
 	/**
 	 * Get an instance, whose state may be lazily fetched.
@@ -94,22 +212,23 @@ public interface EntityManager {
 	 *
 	 * @param entityClass
 	 * @param primaryKey
+	 *
 	 * @return the found entity instance
-	 * @throws IllegalStateException if this EntityManager has been closed
+	 *
 	 * @throws IllegalArgumentException if the first argument does
-	 *                                  not denote an entity type or the second
-	 *                                  argument is not a valid type for that
-	 *                                  entity‚Äôs primary key
+	 *                                  not denote an entity type or the second argument is
+	 *                                  not a valid type for that entity’s primary key or
+	 *                                  is null
 	 * @throws EntityNotFoundException  if the entity state
 	 *                                  cannot be accessed
 	 */
-	public <T> T getReference(Class<T> entityClass, Object primaryKey);
+	public <T> T getReference(Class<T> entityClass,
+							  Object primaryKey);
 
 	/**
 	 * Synchronize the persistence context to the
 	 * underlying database.
 	 *
-	 * @throws IllegalStateException if this EntityManager has been closed
 	 * @throws TransactionRequiredException if there is
 	 *                                      no transaction
 	 * @throws PersistenceException		 if the flush fails
@@ -121,7 +240,6 @@ public interface EntityManager {
 	 * in the persistence context.
 	 *
 	 * @param flushMode
-	 * @throws IllegalStateException if this EntityManager has been closed
 	 */
 	public void setFlushMode(FlushModeType flushMode);
 
@@ -130,34 +248,99 @@ public interface EntityManager {
 	 * in the persistence context.
 	 *
 	 * @return flushMode
-	 * @throws IllegalStateException if this EntityManager has been closed
 	 */
 	public FlushModeType getFlushMode();
 
 	/**
-	 * Set the lock mode for an entity object contained
-	 * in the persistence context.
+	 * Lock an entity instance that is contained in the persistence
+	 * context with the specified lock mode type.
+	 * If a pessimistic lock mode type is specified and the entity
+	 * contains a version attribute, the persistence provider must
+	 * also perform optimistic version checks when obtaining the
+	 * database lock. If these checks fail, the
+	 * OptimisticLockException will be thrown.
+	 * If the lock mode type is pessimistic and the entity instance
+	 * is found but cannot be locked:
+	 * - the PessimisticLockException will be thrown if the database
+	 * locking failure causes transaction-level rollback.
+	 * - the LockTimeoutException will be thrown if the database
+	 * locking failure causes only statement-level rollback
 	 *
 	 * @param entity
 	 * @param lockMode
-	 * @throws IllegalStateException if this EntityManager has been closed
-	 * @throws PersistenceException		 if an unsupported lock call
-	 *                                      is made
-	 * @throws IllegalArgumentException	 if the instance is not
-	 *                                      an entity or is a detached entity
+	 *
+	 * @throws IllegalArgumentException	 if the instance is not an
+	 *                                      entity or is a detached entity
 	 * @throws TransactionRequiredException if there is no
 	 *                                      transaction
+	 * @throws EntityNotFoundException	  if the entity does not exist
+	 *                                      in the database when pessimistic locking is
+	 *                                      performed
+	 * @throws OptimisticLockException	  if the optimistic version
+	 *                                      check fails
+	 * @throws PessimisticLockException	 if pessimistic locking fails
+	 *                                      and the transaction is rolled back
+	 * @throws LockTimeoutException		 if pessimistic locking fails and
+	 *                                      only the statement is rolled back
+	 * @throws PersistenceException		 if an unsupported lock call
+	 *                                      is made
 	 */
 	public void lock(Object entity, LockModeType lockMode);
+
+	/**
+	 * Lock an entity instance that is contained in the persistence
+	 * context with the specified lock mode type and with specified
+	 * properties.
+	 * If a pessimistic lock mode type is specified and the entity
+	 * contains a version attribute, the persistence provider must
+	 * also perform optimistic version checks when obtaining the
+	 * database lock. If these checks fail, the
+	 * OptimisticLockException will be thrown.
+	 * If the lock mode type is pessimistic and the entity instance
+	 * is found but cannot be locked:
+	 * - the PessimisticLockException will be thrown if the database
+	 * locking failure causes transaction-level rollback.
+	 * - the LockTimeoutException will be thrown if the database
+	 * locking failure causes only statement-level rollback
+	 * If a vendor-specific property or hint is not recognized,
+	 * it is silently ignored.
+	 * Portable applications should not rely on the standard timeout
+	 * hint. Depending on the database in use and the locking
+	 * mechanisms used by the provider, the hint may or may not
+	 * be observed.
+	 *
+	 * @param entity
+	 * @param lockMode
+	 * @param properties standard and vendor-specific properties
+	 * and hints
+	 *
+	 * @throws IllegalArgumentException	 if the instance is not an
+	 *                                      entity or is a detached entity
+	 * @throws TransactionRequiredException if there is no
+	 *                                      transaction
+	 * @throws EntityNotFoundException	  if the entity does not exist
+	 *                                      in the database when pessimistic locking is
+	 *                                      performed
+	 * @throws OptimisticLockException	  if the optimistic version
+	 *                                      check fails
+	 * @throws PessimisticLockException	 if pessimistic locking fails
+	 *                                      and the transaction is rolled back
+	 * @throws LockTimeoutException		 if pessimistic locking fails and
+	 *                                      only the statement is rolled back
+	 * @throws PersistenceException		 if an unsupported lock call
+	 *                                      is made
+	 */
+	public void lock(Object entity, LockModeType lockMode,
+					 Map<String, Object> properties);
 
 	/**
 	 * Refresh the state of the instance from the database,
 	 * overwriting changes made to the entity, if any.
 	 *
 	 * @param entity
-	 * @throws IllegalStateException if this EntityManager has been closed
-	 * @throws IllegalArgumentException	 if not an entity
-	 *                                      or entity is not managed
+	 *
+	 * @throws IllegalArgumentException	 if the instance is not
+	 *                                      an entity or the entity is not managed
 	 * @throws TransactionRequiredException if invoked on a
 	 *                                      container-managed entity manager of type
 	 *                                      PersistenceContextType.TRANSACTION and there is
@@ -168,46 +351,218 @@ public interface EntityManager {
 	public void refresh(Object entity);
 
 	/**
+	 * Refresh the state of the instance from the database, using
+	 * the specified properties, and overwriting changes made to
+	 * the entity, if any.
+	 * If a vendor-specific property or hint is not recognized,
+	 * it is silently ignored.
+	 *
+	 * @param entity
+	 * @param properties standard and vendor-specific properties
+	 *
+	 * @throws IllegalArgumentException	 if the instance is not
+	 *                                      an entity or the entity is not managed
+	 * @throws TransactionRequiredException if invoked on a
+	 *                                      container-managed entity manager of type
+	 *                                      PersistenceContextType.TRANSACTION and there is
+	 *                                      no transaction.
+	 * @throws EntityNotFoundException	  if the entity no longer
+	 *                                      exists in the database
+	 */
+	public void refresh(Object entity,
+						Map<String, Object> properties);
+
+	/**
+	 * Refresh the state of the instance from the database,
+	 * overwriting changes made to the entity, if any, and
+	 * lock it with respect to given lock mode type.
+	 * If the lock mode type is pessimistic and the entity instance
+	 * is found but cannot be locked:
+	 * - the PessimisticLockException will be thrown if the database
+	 * locking failure causes transaction-level rollback.
+	 * - the LockTimeoutException will be thrown if the
+	 * database locking failure causes only statement-level
+	 * rollback.
+	 *
+	 * @param entity
+	 * @param lockMode
+	 *
+	 * @throws IllegalArgumentException	 if the instance is not
+	 *                                      an entity or the entity is not managed
+	 * @throws TransactionRequiredException if there is no
+	 *                                      transaction
+	 * @throws EntityNotFoundException	  if the entity no longer exists
+	 *                                      in the database
+	 * @throws PessimisticLockException	 if pessimistic locking fails
+	 *                                      and the transaction is rolled back
+	 * @throws LockTimeoutException		 if pessimistic locking fails and
+	 *                                      only the statement is rolled back
+	 * @throws PersistenceException		 if an unsupported lock call
+	 *                                      is made
+	 */
+	public void refresh(Object entity, LockModeType lockMode);
+
+	/**
+	 * Refresh the state of the instance from the database,
+	 * overwriting changes made to the entity, if any, and
+	 * lock it with respect to given lock mode type and with
+	 * specified properties.
+	 * If the lock mode type is pessimistic and the entity instance
+	 * is found but cannot be locked:
+	 * - the PessimisticLockException will be thrown if the database
+	 * locking failure causes transaction-level rollback.
+	 * - the LockTimeoutException will be thrown if the database
+	 * locking failure causes only statement-level rollback
+	 * If a vendor-specific property or hint is not recognized,
+	 * it is silently ignored.
+	 * Portable applications should not rely on the standard timeout
+	 * hint. Depending on the database in use and the locking
+	 * mechanisms used by the provider, the hint may or may not
+	 * be observed.
+	 *
+	 * @param entity
+	 * @param lockMode
+	 * @param properties standard and vendor-specific properties
+	 * and hints
+	 *
+	 * @throws IllegalArgumentException	 if the instance is not
+	 *                                      an entity or the entity is not managed
+	 * @throws TransactionRequiredException if there is no
+	 *                                      transaction
+	 * @throws EntityNotFoundException	  if the entity no longer exists
+	 *                                      in the database
+	 * @throws PessimisticLockException	 if pessimistic locking fails
+	 *                                      and the transaction is rolled back
+	 * @throws LockTimeoutException		 if pessimistic locking fails and
+	 *                                      only the statement is rolled back
+	 * @throws PersistenceException		 if an unsupported lock call
+	 *                                      is made
+	 */
+	public void refresh(Object entity, LockModeType lockMode,
+						Map<String, Object> properties);
+
+	/**
 	 * Clear the persistence context, causing all managed
 	 * entities to become detached. Changes made to entities that
 	 * have not been flushed to the database will not be
 	 * persisted.
-	 *
-	 * @throws IllegalStateException if this EntityManager has been closed
 	 */
 	public void clear();
 
 	/**
-	 * Check if the instance belongs to the current persistence
-	 * context.
+	 * Remove the given entity from the persistence context, causing
+	 * a managed entity to become detached. Unflushed changes made
+	 * to the entity if any (including removal of the entity),
+	 * will not be synchronized to the database. Entities which
+	 * previously referenced the detached entity will continue to
+	 * reference it.
 	 *
 	 * @param entity
-	 * @return <code>true</code> if the instance belongs to the current persistence context.
-	 * @throws IllegalStateException if this EntityManager has been closed
+	 *
+	 * @throws IllegalArgumentException if the instance is not an
+	 *                                  entity
+	 */
+	public void detach(Object entity);
+
+	/**
+	 * Check if the instance is a managed entity instance belonging
+	 * to the current persistence context.
+	 *
+	 * @param entity
+	 *
+	 * @return
+	 *
 	 * @throws IllegalArgumentException if not an entity
 	 */
 	public boolean contains(Object entity);
 
 	/**
-	 * Create an instance of Query for executing an
-	 * EJB QL statement.
+	 * Get the current lock mode for the entity instance.
 	 *
-	 * @param ejbqlString an EJB QL query string
-	 * @return the new query instance
-	 * @throws IllegalStateException if this EntityManager has been closed
-	 * @throws IllegalArgumentException if query string is not valid
+	 * @param entity
+	 *
+	 * @return lock mode
+	 *
+	 * @throws TransactionRequiredException if there is no
+	 *                                      transaction
+	 * @throws IllegalArgumentException	 if the instance is not a
+	 *                                      managed entity and a transaction is active
 	 */
-	public Query createQuery(String ejbqlString);
+	public LockModeType getLockMode(Object entity);
+
+	/**
+	 * Set an entity manager property.
+	 * If a vendor-specific property is not recognized, it is
+	 * silently ignored.
+	 *
+	 * @param propertyName
+	 * @param value
+	 *
+	 * @throws IllegalArgumentException if the second argument is not
+	 *                                  valid for the implementation
+	 */
+	public void setProperty(String propertyName, Object value);
+
+	/**
+	 * Get the properties and associated values that are in effect
+	 * for the entity manager. Changing the contents of the map does
+	 * not change the configuration in effect.
+	 */
+	public Map<String, Object> getProperties();
+
+	/**
+	 * Get the names of the properties that are supported for use
+	 * with the entity manager.
+	 * These correspond to properties and hints that may be passed
+	 * to the methods of the EntityManager interface that take a
+	 * properties argument or used with the PersistenceContext
+	 * annotation. These properties include all standard entity
+	 * manager hints and properties as well as vendor-specific ones
+	 * supported by the provider. These properties may or may not
+	 * currently be in effect.
+	 *
+	 * @return property names
+	 */
+	public Set<String> getSupportedProperties();
 
 	/**
 	 * Create an instance of Query for executing a
-	 * named query (in EJB QL or native SQL).
+	 * Java Persistence query language statement.
+	 *
+	 * @param qlString a Java Persistence query string
+	 *
+	 * @return the new query instance
+	 *
+	 * @throws IllegalArgumentException if the query string is found
+	 *                                  to be invalid
+	 */
+	public Query createQuery(String qlString);
+
+	/**
+	 * Create an instance of Query for executing a
+	 * criteria query.
+	 *
+	 * @param criteriaQuery a Criteria API query definition object
+	 *
+	 * @return the new query instance
+	 *
+	 * @throws IllegalArgumentException if the query definition is
+	 *                                  found to be invalid
+	 */
+	public Query createQuery(CriteriaQuery criteriaQuery);
+
+	/**
+	 * Create an instance of Query for executing a
+	 * named query (in the Java Persistence query language
+	 * or in native SQL).
 	 *
 	 * @param name the name of a query defined in metadata
+	 *
 	 * @return the new query instance
-	 * @throws IllegalStateException if this EntityManager has been closed
+	 *
 	 * @throws IllegalArgumentException if a query has not been
-	 *                                  defined with the given name
+	 *                                  defined with the given name or if the query string is
+	 *                                  found to be invalid
 	 */
 	public Query createNamedQuery(String name);
 
@@ -216,8 +571,8 @@ public interface EntityManager {
 	 * a native SQL statement, e.g., for update or delete.
 	 *
 	 * @param sqlString a native SQL query string
+	 *
 	 * @return the new query instance
-	 * @throws IllegalStateException if this EntityManager has been closed
 	 */
 	public Query createNativeQuery(String sqlString);
 
@@ -225,23 +580,25 @@ public interface EntityManager {
 	 * Create an instance of Query for executing
 	 * a native SQL query.
 	 *
-	 * @param sqlString   a native SQL query string
+	 * @param sqlString a native SQL query string
 	 * @param resultClass the class of the resulting instance(s)
+	 *
 	 * @return the new query instance
-	 * @throws IllegalStateException if this EntityManager has been closed
 	 */
-	public Query createNativeQuery(String sqlString, Class resultClass);
+	public Query createNativeQuery(String sqlString,
+								   Class resultClass);
 
 	/**
 	 * Create an instance of Query for executing
 	 * a native SQL query.
 	 *
-	 * @param sqlString		a native SQL query string
+	 * @param sqlString a native SQL query string
 	 * @param resultSetMapping the name of the result set mapping
+	 *
 	 * @return the new query instance
-	 * @throws IllegalStateException if this EntityManager has been closed
 	 */
-	public Query createNativeQuery(String sqlString, String resultSetMapping);
+	public Query createNativeQuery(String sqlString,
+								   String resultSetMapping);
 
 	/**
 	 * Indicate to the EntityManager that a JTA transaction is
@@ -250,31 +607,48 @@ public interface EntityManager {
 	 * of the active transaction to associate it with the current
 	 * JTA transaction.
 	 *
-	 * @throws IllegalStateException if this EntityManager has been closed
 	 * @throws TransactionRequiredException if there is
 	 *                                      no transaction.
 	 */
 	public void joinTransaction();
 
-   /**
-    * Return the underlying provider object for the EntityManager, if available.
-    * The result of this method is implementation specific
-    *
-    * @throws IllegalStateException if this EntityManager has been closed
-    */
-   public Object getDelegate();
+	/**
+	 * Return an object of the specified type to allow access to the
+	 * provider-specific API. If the provider's EntityManager
+	 * implementation does not support the specified class, the
+	 * PersistenceException is thrown.
+	 *
+	 * @param cls the class of the object to be returned. This is
+	 * normally either the underlying EntityManager implementation
+	 * class or an interface that it implements.
+	 *
+	 * @return an instance of the specified class
+	 *
+	 * @throws PersistenceException if the provider does not
+	 *                              support the call.
+	 */
+	public <T> T unwrap(Class<T> cls);
 
-   /**
+	/**
+	 * Return the underlying provider object for the EntityManager,
+	 * if available. The result of this method is implementation
+	 * specific. The unwrap method is to be preferred for new
+	 * applications.
+	 * /
+	 * public Object getDelegate();
+	 * /**
 	 * Close an application-managed EntityManager.
 	 * After the close method has been invoked, all methods
 	 * on the EntityManager instance and any Query objects obtained
 	 * from it will throw the IllegalStateException except
-	 * for getTransaction and isOpen (which will return false).
+	 * for getProperties, getSupportedProperties, getTransaction,
+	 * and isOpen (which will return false).
 	 * If this method is called when the EntityManager is
 	 * associated with an active transaction, the persistence
 	 * context remains managed until the transaction completes.
 	 *
-	 * @throws IllegalStateException if the EntityManager is container-managed or has been already closed
+	 * @throws IllegalStateException if the EntityManager
+	 *                               is container-managed.
 	 */
 	public void close();
 
@@ -291,8 +665,41 @@ public interface EntityManager {
 	 * begin and commit multiple transactions.
 	 *
 	 * @return EntityTransaction instance
+	 *
 	 * @throws IllegalStateException if invoked on a JTA
 	 *                               EntityManager.
 	 */
 	public EntityTransaction getTransaction();
+
+	/**
+	 * Return the entity manager factory for the entity manager.
+	 *
+	 * @return EntityManagerFactory instance
+	 *
+	 * @throws IllegalStateException if the entity manager has
+	 *                               been closed.
+	 */
+	public EntityManagerFactory getEntityManagerFactory();
+
+	/**
+	 * Return an instance of QueryBuilder for the creation of
+	 * Criteria API Query objects.
+	 *
+	 * @return QueryBuilder instance
+	 *
+	 * @throws IllegalStateException if the entity manager has
+	 *                               been closed.
+	 */
+	public QueryBuilder getQueryBuilder();
+
+	/**
+	 * Return an instance of Metamodel interface for access to the
+	 * metamodel of the persistence unit.
+	 *
+	 * @return Metamodel instance
+	 *
+	 * @throws IllegalStateException if the entity manager has
+	 *                               been closed.
+	 */
+	public Metamodel getMetamodel();
 }

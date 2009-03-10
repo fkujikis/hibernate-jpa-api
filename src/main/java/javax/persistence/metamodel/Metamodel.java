@@ -1,11 +1,10 @@
+// $Id$
 package javax.persistence.metamodel;
 
 /**
  * Provides access to the metamodel of persistent
  * entities in the persistence unit. 
  *
- * @param <X> The type of the represented entity, mapped
- *            mapped superclass, or embeddable.
  */
 public interface Metamodel {
 

@@ -1,5 +1,4 @@
-//$Id:$
-//EJB3 Specification Copyright 2004-2006 Sun Microsystems, Inc.
+//$Id$
 package javax.persistence;
 
 import java.lang.annotation.Target;

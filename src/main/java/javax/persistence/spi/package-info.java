@@ -1,4 +1,4 @@
-//$Id:$
+//$Id$
 //EJB3 Specification Copyright 2004-2006 Sun Microsystems, Inc.
 
 /**

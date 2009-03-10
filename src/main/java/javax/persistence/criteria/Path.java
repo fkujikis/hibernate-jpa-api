@@ -1,3 +1,4 @@
+// $Id$
 package javax.persistence.criteria;
 
 import javax.persistence.metamodel.AbstractCollection;
@@ -31,7 +32,7 @@ public interface Path<X> extends Expression<X> {
     /**
      *  Return the path corresponding to the referenced 
      *  collection-valued attribute.
-     *  @param model collection-valued attribute
+     *  @param collection collection-valued attribute
      *  @return path corresponding to the referenced attribute
      */
     <E, C extends java.util.Collection<E>> Expression<C> get(AbstractCollection<X, C, E> collection);
@@ -39,7 +40,7 @@ public interface Path<X> extends Expression<X> {
     /**
      *  Return the path corresponding to the referenced 
      *  map-valued attribute.
-     *  @param model map-valued attribute
+     *  @param collection map-valued attribute
      *  @return path corresponding to the referenced attribute
      */
     <K, V, M extends java.util.Map<K, V>> Expression<M> get(Map<X, K, V> collection);

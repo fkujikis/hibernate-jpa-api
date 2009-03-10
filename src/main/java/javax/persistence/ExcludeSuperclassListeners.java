@@ -1,4 +1,4 @@
-//$Id: ExcludeSuperclassListeners.java 11171 2007-02-08 03:40:51Z epbernard $
+//$Id$
 package javax.persistence;
 
 import java.lang.annotation.Target;

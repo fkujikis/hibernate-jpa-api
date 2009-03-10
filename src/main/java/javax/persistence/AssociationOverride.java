@@ -1,13 +1,12 @@
-//$Id:$
-//EJB3 Specification Copyright 2004-2006 Sun Microsystems, Inc.
+// $Id$
 package javax.persistence;
 
-import java.lang.annotation.Target;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.FIELD;
+import java.lang.annotation.Target;
 
 /**
  * This annotation is used to override a many-to-one or one-to-one mapping of property or field for
@@ -19,16 +18,12 @@ import static java.lang.annotation.ElementType.FIELD;
  *
  * @author Emmanuel Bernard
  */
-@Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
+@Target({ TYPE, METHOD, FIELD })
+@Retention(RUNTIME)
 public @interface AssociationOverride {
-	/**
-	 * The name of the relationship property whose mapping is being overridden if property-based
-	 * access is being used, or the name of the relationship field if field-based access is used.
-	 */
 	String name();
 
-	/**
-	 * The join column that is being mapped to the persistent attribute.
-	 */
-	JoinColumn[] joinColumns();
+	JoinColumn[] joinColumns() default { };
+
+	JoinTable joinTable() default @JoinTable;
 }

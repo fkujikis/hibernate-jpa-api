@@ -1,3 +1,4 @@
+// $Id$
 package javax.persistence.criteria;
 
 import java.math.BigDecimal;
@@ -156,14 +157,14 @@ public interface QueryBuilder {
     
     /**
      * Create a conjunction of the given restriction predicates.
-     * @param restriction  zero or more restriction predicates
+     * @param restrictions  zero or more restriction predicates
      * @return and predicate
      */
     Predicate and(Predicate... restrictions);
 
     /**
      * Create a conjunction of the given restriction predicates.
-     * @param restriction  zero or more restriction predicates
+     * @param restrictions  zero or more restriction predicates
      * @return and predicate
      */
     Predicate or(Predicate... restrictions);
@@ -590,21 +591,21 @@ public interface QueryBuilder {
     
     /**
      * Typecast
-     * @param numeric expression
+     * @param number expression
      * @return Expression<Long>
      */	
     Expression<Long> toLong(Expression<? extends Number> number);
 
     /**
      * Typecast
-     * @param numeric expression
+     * @param number expression
      * @return Expression<Integer>
      */	
     Expression<Integer> toInteger(Expression<? extends Number> number);
 
     /**
      * Typecast
-     * @param numeric expression
+     * @param number expression
      * @return Expression<Float>
      */	
     Expression<Float> toFloat(Expression<? extends Number> number);
@@ -617,14 +618,14 @@ public interface QueryBuilder {
 
     /**
      * Typecast
-     * @param numeric expression
+     * @param number expression
      * @return Expression<BigDecimal>
      */	
     Expression<BigDecimal> toBigDecimal(Expression<? extends Number> number);
 
     /**
      * Typecast
-     * @param numeric expression
+     * @param number expression
      * @return Expression<BigInteger>
      */	
     Expression<BigInteger> toBigInteger(Expression<? extends Number> number);

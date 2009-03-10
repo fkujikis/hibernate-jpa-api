@@ -1,12 +1,10 @@
-//$Id: Embeddable.java 11171 2007-02-08 03:40:51Z epbernard $
-//EJB Specification Copyright 2004 Sun Microsystems, Inc.
+// $Id$
 package javax.persistence;
 
+import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
 
 
 /**
@@ -18,5 +16,7 @@ import static java.lang.annotation.RetentionPolicy.*;
  *
  * @author Emmanuel Bernard
  */
-@Target({TYPE}) @Retention(RUNTIME)
-public @interface Embeddable {}
+@Target({ TYPE })
+@Retention(RUNTIME)
+public @interface Embeddable {
+}

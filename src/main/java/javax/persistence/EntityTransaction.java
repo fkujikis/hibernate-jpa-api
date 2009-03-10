@@ -1,4 +1,4 @@
-//$Id: EntityTransaction.java 11171 2007-02-08 03:40:51Z epbernard $
+//$Id$
 package javax.persistence;
 
 /**
@@ -53,8 +53,9 @@ public interface EntityTransaction {
 
 	/**
 	 * Indicate whether a transaction is in progress.
+	 *
 	 * @throws PersistenceException if an unexpected error
-	 * condition is encountered.
+	 *                              condition is encountered.
 	 */
 	public boolean isActive();
 }

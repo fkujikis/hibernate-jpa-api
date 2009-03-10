@@ -1,26 +1,25 @@
-//$Id: EntityManagerFactory.java 11171 2007-02-08 03:40:51Z epbernard $
+//$Id$
 package javax.persistence;
 
 import java.util.Map;
+import java.util.Set;
+import javax.persistence.criteria.QueryBuilder;
+import javax.persistence.metamodel.Metamodel;
 
 /**
- * The EntityManagerFactory interface is used by the application to obtain an
- * application-managed entity manager. When the application has finished using
- * the entity manager factory, and/or at application shutdown, the application
- * should close the entity manager factory. Once an EntityManagerFactory has been
- * closed, all its entity managers are considered to be in the closed state.
- *
- * @author Emmanuel Bernard
+ * Interface used to interact with the entity manager factory * for the persistence unit.
  */
 public interface EntityManagerFactory {
-
 	/**
 	 * Create a new EntityManager.
 	 * This method returns a new EntityManager instance each time
 	 * it is invoked.
 	 * The isOpen method will return true on the returned instance.
+	 *
+	 * @throws IllegalStateException if the entity manager factory
+	 *                               has been closed.
 	 */
-	EntityManager createEntityManager();
+	public EntityManager createEntityManager();
 
 	/**
 	 * Create a new EntityManager with the specified Map of
@@ -28,8 +27,39 @@ public interface EntityManagerFactory {
 	 * This method returns a new EntityManager instance each time
 	 * it is invoked.
 	 * The isOpen method will return true on the returned instance.
+	 *
+	 * @throws IllegalStateException if the entity manager factory
+	 *                               has been closed.
 	 */
-	EntityManager createEntityManager(Map map);
+	public EntityManager createEntityManager(Map map);
+
+	/**
+	 * Return an instance of QueryBuilder for the creation of
+	 * Criteria API objects.
+	 *
+	 * @return QueryBuilder instance
+	 *
+	 * @throws IllegalStateException if the entity manager factory
+	 *                               has been closed.
+	 */
+	public QueryBuilder getQueryBuilder();
+
+	/**
+	 * Return an instance of Metamodel interface for access to the
+	 * metamodel of the persistence unit.
+	 *
+	 * @return Metamodel instance
+	 *
+	 * @throws IllegalStateException if the entity manager has
+	 *                               been closed.
+	 */
+	public Metamodel getMetamodel();
+
+	/**
+	 * Indicates whether the factory is open. Returns true
+	 * until the factory has been closed.
+	 */
+	public boolean isOpen();
 
 	/**
 	 * Close the factory, releasing any resources that it holds.
@@ -38,12 +68,42 @@ public interface EntityManagerFactory {
 	 * which will return false. Once an EntityManagerFactory has
 	 * been closed, all its entity managers are considered to be
 	 * in the closed state.
+	 *
+	 * @throws IllegalStateException if the entity manager factory
+	 *                               has been closed.
 	 */
-	void close();
+	public void close();
 
 	/**
-	 * Indicates whether or not this factory is open. Returns
-	 * true until a call to close has been made.
+	 * Get the properties and associated values that are in effect
+	 * for the entity manager factory. Changing the contents of the
+	 * map does not change the configuration in effect.
+	 *
+	 * @return properties
 	 */
-	public boolean isOpen();
+	public Map<String, Object> getProperties();
+
+	/**
+	 * Get the names of the properties that are supported for use
+	 * with the entity manager factory. These correspond to
+	 * properties that may be passed to the methods of the
+	 * EntityManagerFactory interface that take a properties
+	 * argument. These include all standard properties as well as
+	 * vendor-specific properties supported by the provider. These
+	 * properties may or may not currently be in effect.
+	 *
+	 * @return properties and hints
+	 */
+	public Set<String> getSupportedProperties();
+
+	/**
+	 * Access the cache that is associated with the entity manager
+	 * factory (the "second level cache").
+	 *
+	 * @return instance of the Cache interface
+	 *
+	 * @throws IllegalStateException if the entity manager factory
+	 *                               has been closed.
+	 */
+	public Cache getCache();
 }

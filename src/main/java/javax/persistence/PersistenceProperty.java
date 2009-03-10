@@ -1,4 +1,4 @@
-//$Id: $
+// $Id$
 package javax.persistence;
 
 import java.lang.annotation.Retention;

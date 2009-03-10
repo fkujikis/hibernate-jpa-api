@@ -1,5 +1,4 @@
-//$Id: EmbeddedId.java 11171 2007-02-08 03:40:51Z epbernard $
-//EJB3 Specification Copyright 2004-2006 Sun Microsystems, Inc.
+//$Id$
 package javax.persistence;
 
 import java.lang.annotation.ElementType;

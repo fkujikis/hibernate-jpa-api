@@ -1,5 +1,4 @@
-//$Id: Embedded.java 11171 2007-02-08 03:40:51Z epbernard $
-//EJB Specification Copyright 2004 Sun Microsystems, Inc.
+//$Id$
 package javax.persistence;
 
 import java.lang.annotation.Retention;

@@ -1,27 +1,27 @@
-//$Id: PersistenceUnitInfo.java 11171 2007-02-08 03:40:51Z epbernard $
-//EJB3 Specification Copyright 2004-2006 Sun Microsystems, Inc.package javax.persistence.spi;
+//$Id$
 package javax.persistence.spi;
 
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
+import javax.persistence.Caching;
+import javax.persistence.ValidationMode;
 import javax.sql.DataSource;
 
 /**
- * Interface implemented by the container and used by the
- * persistence provider when creating an EntityManagerFactory.
+ * Interface implemented by the container and used by the * persistence provider when creating an EntityManagerFactory.
  */
 public interface PersistenceUnitInfo {
 	/**
 	 * @return The name of the persistence unit.
-	 *         Corresponds to the <name> element in the persistence.xml file.
+	 *         Corresponds to the name attribute in the persistence.xml file.
 	 */
 	public String getPersistenceUnitName();
 
 	/**
 	 * @return The fully qualified name of the persistence provider
 	 *         implementation class.
-	 *         Corresponds to the <provider> element in the persistence.xml
+	 *         Corresponds to the provider element in the persistence.xml
 	 *         file.
 	 */
 	public String getPersistenceProviderClassName();
@@ -37,7 +37,7 @@ public interface PersistenceUnitInfo {
 	/**
 	 * @return The JTA-enabled data source to be used by the
 	 *         persistence provider.
-	 *         The data source corresponds to the <jta-data-source>
+	 *         The data source corresponds to the jta-data-source
 	 *         element in the persistence.xml file or is provided at
 	 *         deployment or by the container.
 	 */
@@ -47,7 +47,7 @@ public interface PersistenceUnitInfo {
 	 * @return The non-JTA-enabled data source to be used by the
 	 *         persistence provider for accessing data outside a JTA
 	 *         transaction.
-	 *         The data source corresponds to the named <non-jta-data-source>
+	 *         The data source corresponds to the non-jta-data-source
 	 *         element in the persistence.xml file or provided at
 	 *         deployment or by the container.
 	 */
@@ -59,31 +59,44 @@ public interface PersistenceUnitInfo {
 	 *         classes. The mapping files must be in the standard XML
 	 *         mapping format, be uniquely named and be resource-loadable
 	 *         from the application classpath.
-	 *         Each mapping file name corresponds to a <mapping-file>
+	 *         Each mapping file name corresponds to a mapping-file
 	 *         element in the persistence.xml file.
 	 */
 	public List<String> getMappingFileNames();
 
 	/**
-	 * @return The list of JAR file URLs that the persistence
-	 *         provider must examine for managed classes of the persistence
-	 *         unit. Each jar file URL corresponds to a named <jar-file>
-	 *         element in the persistence.xml file.
+	 * Returns a list of URLs for the jar files or exploded jar
+	 * file directories that the persistence provider must examine
+	 * for managed classes of the persistence unit. Each URL
+	 * corresponds to a jar-file element in the
+	 * persistence.xml file. A URL will either be a file:
+	 * URL referring to a jar file or referring to a directory
+	 * that contains an exploded jar file, or some other URL from
+	 * which an InputStream in jar format can be obtained.
+	 *
+	 * @return a list of URL objects referring to jar files or
+	 *         directories.
 	 */
 	public List<URL> getJarFileUrls();
 
 	/**
-	 * @return The URL for the jar file or directory that is the
-	 *         root of the persistence unit. (If the persistence unit is
-	 *         rooted in the WEB-INF/classes directory, this will be the
-	 *         URL of that directory.)
+	 * Returns the URL for the jar file or directory that is the
+	 * root of the persistence unit. (If the persistence unit is
+	 * rooted in the WEB-INF/classes directory, this will be the
+	 * URL of that directory.)
+	 * The URL will either be a file: URL referring to a jar file
+	 * or referring to a directory that contains an exploded jar
+	 * file, or some other URL from which an InputStream in jar
+	 * format can be obtained.
+	 *
+	 * @return a URL referring to a jar file or directory.
 	 */
 	public URL getPersistenceUnitRootUrl();
 
 	/**
 	 * @return The list of the names of the classes that the
 	 *         persistence provider must add it to its set of managed
-	 *         classes. Each name corresponds to a named <class> element
+	 *         classes. Each name corresponds to a class element
 	 *         in the persistence.xml file.
 	 */
 	public List<String> getManagedClassNames();
@@ -92,16 +105,37 @@ public interface PersistenceUnitInfo {
 	 * @return Whether classes in the root of the persistence
 	 *         unit that have not been explicitly listed are to be
 	 *         included in the set of managed classes.
-	 *         This value corresponds to the <exclude-unlisted-classes>
+	 *         This value corresponds to the exclude-unlisted-classes
 	 *         element in the persistence.xml file.
 	 */
 	public boolean excludeUnlistedClasses();
 
 	/**
+	 * @return The specification of how the provider must use
+	 *         a second-level cache for the persistence unit
+	 *         The result of this method corresponds to the caching
+	 *         element in the persistence.xml file.
+	 */
+	public Caching getCaching();
+
+	/**
+	 * @return The validation mode to be used by the
+	 *         persistence provider for the persistence unit.
+	 *         The validation mode corresponds to the validation-mode
+	 *         element in the persistence.xml file.
+	 */
+	public ValidationMode getValidationMode();
+
+	/**
 	 * @return Properties object. Each property corresponds
-	 *         to a <property> element in the persistence.xml file
+	 *         to a property element in the persistence.xml file
 	 */
 	public Properties getProperties();
+
+	/**
+	 * @return persistence.xml schema version
+	 */
+	public String PersistenceXMLSchemaVersion();
 
 	/**
 	 * @return ClassLoader that the provider may use to load any
@@ -113,15 +147,15 @@ public interface PersistenceUnitInfo {
 	 * Add a transformer supplied by the provider that will be
 	 * called for every new class definition or class redefinition
 	 * that gets loaded by the loader returned by the
-	 * PersistenceInfo.getClassLoader method. The transformer
+	 * PersistenceUnitInfo.getClassLoader method. The transformer
 	 * has no effect on the result returned by the
-	 * PersistenceInfo.getTempClassLoader method.
+	 * PersistenceUnitInfo.getNewTempClassLoader method.
 	 * Classes are only transformed once within the same classloading
 	 * scope, regardless of how many persistence units they may be
 	 * a part of.
 	 *
 	 * @param transformer A provider-supplied transformer that the
-	 *                    Container invokes at class-(re)definition time
+	 * Container invokes at class-(re)definition time
 	 */
 	public void addTransformer(ClassTransformer transformer);
 
@@ -130,13 +164,14 @@ public interface PersistenceUnitInfo {
 	 * may use to temporarily load any classes, resources, or
 	 * open URLs. The scope and classpath of this loader is
 	 * exactly the same as that of the loader returned by
-	 * PersistenceInfo.getClassLoader. None of the classes loaded
+	 * PersistenceUnitInfo.getClassLoader. None of the classes loaded
 	 * by this class loader will be visible to application
-	 * components. The container does not use or maintain references
-	 * to this class loader after returning it to the provider.
+	 * components. The provider may only use this ClassLoader
+	 * within the scope of the createContainerEntityManagerFactory
+	 * call.
 	 *
 	 * @return Temporary ClassLoader with same visibility as current
-	 * loader
+	 *         loader
 	 */
 	public ClassLoader getNewTempClassLoader();
 }

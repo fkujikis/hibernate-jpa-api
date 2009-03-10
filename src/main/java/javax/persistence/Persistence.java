@@ -1,4 +1,4 @@
-// $Id: Persistence.java 11171 2007-02-08 03:40:51Z epbernard $
+// $Id$
 package javax.persistence;
 
 import java.io.BufferedReader;
@@ -27,6 +27,7 @@ public class Persistence {
 	 * Create and return an EntityManagerFactory for the named persistence unit.
 	 *
 	 * @param persistenceUnitName The name of the persistence unit
+	 *
 	 * @return The factory that creates EntityManagers configured according to the specified persistence unit
 	 */
 	public static EntityManagerFactory createEntityManagerFactory(String persistenceUnitName) {
@@ -39,6 +40,7 @@ public class Persistence {
 	 * @param persistenceUnitName The name of the persistence unit
 	 * @param properties Additional properties to use when creating the factory. The values of these properties override
 	 * any values that may have been configured elsewhere
+	 *
 	 * @return The factory that creates EntityManagers configured according to the specified persistence unit
 	 */
 	public static EntityManagerFactory createEntityManagerFactory(String persistenceUnitName, Map properties) {
@@ -49,13 +51,23 @@ public class Persistence {
 		}
 		for ( PersistenceProvider provider : providers ) {
 			emf = provider.createEntityManagerFactory( persistenceUnitName, properties );
-			if ( emf != null ) break;
+			if ( emf != null ) {
+				break;
+			}
 		}
 		if ( emf == null ) {
 			throw new PersistenceException( "No Persistence provider for EntityManager named " + persistenceUnitName );
 		}
 		return emf;
 	}
+
+	/**
+	 * Return the PersistenceUtil instance
+	 */
+	public PersistenceUtil getPersistenceUtil() {
+		return null; //new PersistenceUtilImpl();
+	}
+
 
 	// Helper methods
 
@@ -76,19 +88,19 @@ public class Persistence {
 			}
 			for ( String s : names ) {
 				Class providerClass = loader.loadClass( s );
-				providers.add( (PersistenceProvider) providerClass.newInstance() );
+				providers.add( ( PersistenceProvider ) providerClass.newInstance() );
 			}
 		}
-		catch (IOException e) {
+		catch ( IOException e ) {
 			throw new PersistenceException( e );
 		}
-		catch (InstantiationException e) {
+		catch ( InstantiationException e ) {
 			throw new PersistenceException( e );
 		}
-		catch (IllegalAccessException e) {
+		catch ( IllegalAccessException e ) {
 			throw new PersistenceException( e );
 		}
-		catch (ClassNotFoundException e) {
+		catch ( ClassNotFoundException e ) {
 			throw new PersistenceException( e );
 		}
 	}

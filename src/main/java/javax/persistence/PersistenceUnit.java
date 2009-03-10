@@ -1,4 +1,4 @@
-/* $Id: PersistenceUnit.java 11171 2007-02-08 03:40:51Z epbernard $
+/* $Id$
  * JBoss Inc
  *
  * Distributable under LGPL license.

@@ -1,3 +1,4 @@
+// $Id$
 package javax.persistence.metamodel;
 
 import java.lang.annotation.ElementType;

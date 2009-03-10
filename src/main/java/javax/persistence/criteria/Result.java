@@ -1,3 +1,4 @@
+// $Id$
 package javax.persistence.criteria;
 
 public interface Result {

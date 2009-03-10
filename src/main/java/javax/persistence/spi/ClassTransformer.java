@@ -1,39 +1,45 @@
-//$Id: ClassTransformer.java 11171 2007-02-08 03:40:51Z epbernard $
-//EJB3 Specification Copyright 2004-2006 Sun Microsystems, Inc.
+//$Id$
 package javax.persistence.spi;
 
-import java.security.ProtectionDomain;
 import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
 
 /**
- * A persistence provider provides an instance of this interface
- * to the PersistenceUnitInfo.addTransformer method.
- * The supplied transformer instance will get called to transform
- * entity class files when they are loaded and redefined.  The transformation
- * occurs before the class is defined by the JVM
- *
- *
- * @author <a href="mailto:bill@jboss.org">Bill Burke</a>
- * @version $Revision: 11171 $
+ * A persistence provider supplies an instance of this
+ * interface to the PersistenceUnitInfo.addTransformer
+ * method. The supplied transformer instance will get
+ * called to transform entity class files when they are
+ * loaded or redefined. The transformation occurs before
+ * the class is defined by the JVM.
  */
-public interface ClassTransformer
-{
-   /**
-    * Invoked when a class is being loaded or redefined to add hooks for persistence bytecode manipulation
-    *
-    * @param loader the defining class loaderof the class being transformed.  It may be null if using bootstrap loader
-    * @param classname The name of the class being transformed
-    * @param classBeingRedefined If an already loaded class is being redefined, then pass this as a parameter
-    * @param protectionDomain ProtectionDomain of the class being (re)-defined
-    * @param classfileBuffer The input byte buffer in class file format
-    * @return A well-formed class file that can be loaded
-    *
-    * @throws IllegalClassFormatException
-    */
-   byte[] transform(ClassLoader loader,
-                    String classname,
-                    Class<?> classBeingRedefined,
-                    ProtectionDomain protectionDomain,
-                    byte[] classfileBuffer)
-   throws IllegalClassFormatException;
+public interface ClassTransformer {
+	/**
+	 * Invoked when a class is being loaded or redefined.
+	 * The implementation of this method may transform the
+	 * supplied class file and return a new replacement class
+	 * file.
+	 *
+	 * @param loader The defining loader of the class to be
+	 * transformed, may be null if the bootstrap loader
+	 * @param className The name of the class in the internal form
+	 * of fully qualified class and interface names
+	 * @param classBeingRedefined If this is a redefine, the
+	 * class being redefined, otherwise null
+	 * @param protectionDomain The protection domain of the
+	 * class being defined or redefined
+	 * @param classfileBuffer The input byte buffer in class
+	 * file format - must not be modified
+	 *
+	 * @return A well-formed class file buffer (the result of
+	 *         the transform), or null if no transform is performed
+	 *
+	 * @throws IllegalClassFormatException If the input does
+	 *                                     not represent a well-formed class file
+	 */
+	byte[] transform(ClassLoader loader,
+					 String className,
+					 Class<?> classBeingRedefined,
+					 ProtectionDomain protectionDomain,
+					 byte[] classfileBuffer)
+			throws IllegalClassFormatException;
 }
