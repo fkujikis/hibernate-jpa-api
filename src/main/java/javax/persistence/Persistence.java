@@ -65,7 +65,7 @@ public class Persistence {
 	/**
 	 * @return Returns a <code>PersistenceUtil</code> instance.
 	 */
-	public PersistenceUtil getPersistenceUtil() {
+	public static PersistenceUtil getPersistenceUtil() {
 		// return a dummy implementation of PersistenceUtil. Introduced for Hibernate Validator (HV-104).
 		// Needs to be changed once we start updating EntityManager and introduce JPA2
 		return new PersistenceUtil() {
