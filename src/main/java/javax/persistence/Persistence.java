@@ -63,15 +63,25 @@ public class Persistence {
 	}
 
 	/**
-	 * Return the PersistenceUtil instance
+	 * @return Returns a <code>PersistenceUtil</code> instance.
 	 */
 	public PersistenceUtil getPersistenceUtil() {
-		return null; //new PersistenceUtilImpl();
+		// return a dummy implementation of PersistenceUtil. Introduced for Hibernate Validator (HV-104).
+		// Needs to be changed once we start updating EntityManager and introduce JPA2
+		return new PersistenceUtil() {
+
+			public boolean isLoaded(Object entity, String attributeName) {
+				return true;
+			}
+
+			public boolean isLoaded(Object object) {
+				return true;
+			}
+		};
 	}
 
 
 	// Helper methods
-
 	private static void findAllProviders() {
 		try {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();

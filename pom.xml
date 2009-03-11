@@ -80,12 +80,12 @@
                         <archive>
                             <manifestEntries>
                                 <Built-By>hibernate.org</Built-By>
-                                <Specification-Title>EJB 3.0</Specification-Title>
+                                <Specification-Title>Java Persistence API, Version 2.0</Specification-Title>
                                 <Specification-Version>${pom.version}</Specification-Version>
                                 <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
                                 <Implementation-Version>${pom.version}</Implementation-Version>
                                 <Implementation-Vendor>hibernate.org</Implementation-Vendor>
-                                <Implementation-Title>EJB</Implementation-Title>
+                                <Implementation-Title>JAP API</Implementation-Title>
                             </manifestEntries>
                         </archive>
                     </configuration>
@@ -95,21 +95,20 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>2.5</version>
                     <configuration>
-                        <packagenames>javax.persistence.*</packagenames> 
                         <use>true</use>
-                        <protected>true</protected>
                         <version>true</version>
                         <overview>${basedir}/src/main/javadoc/package.html</overview>
                         <windowtitle>EJB 3.0 Persistence API Documentation</windowtitle>
                         <doctitle>EJB 3.0 Persistence API Documentation</doctitle>
-                        <link>http://java.sun.com/j2se/1.5/docs/api</link>
+                        <links>
+                            <link>http://java.sun.com/j2se/1.5/docs/api</link>
+                        </links>
                         <stylesheetfile>${basedir}/src/main/javadoc/jdstyle.css</stylesheetfile>
                     </configuration>                  
                 </plugin>
                 <plugin>
                     <artifactId>maven-release-plugin</artifactId>
                     <configuration>
-                        <releaseProfiles>release</releaseProfiles>
                         <goals>package</goals>
                     </configuration>
                 </plugin>
