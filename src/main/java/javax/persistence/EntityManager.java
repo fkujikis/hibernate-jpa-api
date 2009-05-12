@@ -635,6 +635,14 @@ public interface EntityManager {
 	 * if available. The result of this method is implementation
 	 * specific. The unwrap method is to be preferred for new
 	 * applications.
+	 */
+	public Object getDelegate();
+
+	/**
+	 * Return the underlying provider object for the EntityManager,
+	 * if available. The result of this method is implementation
+	 * specific. The unwrap method is to be preferred for new
+	 * applications.
 	 * /
 	 * public Object getDelegate();
 	 * /**
