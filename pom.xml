@@ -3,7 +3,7 @@
 
     <groupId>org.hibernate.java-persistence</groupId>
     <artifactId>jpa-api</artifactId>
-    <version>2.0.Beta2-SNAPSHOT</version>
+    <version>2.0.Beta2</version>
     <packaging>jar</packaging>
     <name>JPA API</name>
 
@@ -18,8 +18,8 @@
     </licenses>
 
     <scm>
-        <connection>scm:svn:https://svn.jboss.org/repos/hibernate/jpa-api/trunk</connection>
-        <url>http://fisheye.jboss.org/browse/Hibernate/jpa-api/trunk</url>
+        <connection>scm:svn:https://svn.jboss.org/repos/hibernate/jpa-api/tags/v2_0_Beta2</connection>
+        <url>http://fisheye.jboss.org/browse/Hibernate/jpa-api/tags/v2_0_Beta2</url>
     </scm>
 
     <developers>
@@ -115,9 +115,6 @@
     
     <distributionManagement>
         <repository>
-            <!-- Copy the dist to the local checkout of the JBoss maven2 repo ${maven.repository.root} -->
-            <!-- It is anticipated that ${maven.repository.root} be set in user's settings.xml -->
-            <!-- todo : replace this with direct svn access once the svnkit providers are available -->
             <id>repository.jboss.org</id>
             <url>file://${maven.repository.root}</url>
         </repository>
