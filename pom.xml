@@ -3,12 +3,19 @@
 
     <groupId>org.hibernate.java-persistence</groupId>
     <artifactId>jpa-api</artifactId>
-    <version>2.0.Beta3-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>JPA API</name>
+    <version>2.0.pfd-SNAPSHOT</version>
 
-    <description>JSR 317: Java Persistence API 2.0</description>
+    <name>JPA API (developmental)</name>
+    <description>
+        Hibernate developmental JSR 317 (Java Persistence API 2.0) contracts.  Used to
+        allow incremental implementation of features on the way to full JPA 2.0 support.
+    </description>
 
+    <organization>
+        <name>Hibernate.org</name>
+        <url>http://hibernate.org</url>
+    </organization>
     <inceptionYear>2007</inceptionYear>
 
     <licenses>
@@ -27,15 +34,19 @@
             <id>epbernard</id>
             <name>Emmanuel Bernard</name>
             <email>emmanuel@hibernate.org</email>
-            <organization>JBoss, a division of Red Hat</organization>
+            <organization>JBoss by Red Hat</organization>
             <url>http://in.relation.to/Bloggers/Emmanuel</url>
         </developer>
         <developer>
             <id>hardy.ferentschik</id>
             <name>Hardy Ferentschik</name>
             <email>hferents@redhat.com</email>
-            <organization>JBoss, a division of Red Hat</organization>
+            <organization>JBoss by Red Hat</organization>
             <url>http://in.relation.to/Bloggers/Hardy</url>
+        </developer>
+        <developer>
+            <name>Steve Ebersole</name>
+            <email>steve@hibernate.org</email>
         </developer>
     </developers>
 
