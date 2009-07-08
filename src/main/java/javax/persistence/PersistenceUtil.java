@@ -14,7 +14,8 @@ public interface PersistenceUtil {
 	/**
 	 * Determine the load state of a given persistent attribute
 	 * regardless of the persistence provider that created the
-	 * containing entity. * @param attributeName name of attribute whose load state is * to be determined
+	 * containing entity.
+	 * @param attributeName name of attribute whose load state is * to be determined
 	 *
 	 * @return false if entity's state has not been loaded or
 	 *         if the attribute state has not been loaded, otherwise true
