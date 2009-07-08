@@ -2,17 +2,36 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence.criteria;
 
-/**
- * The Selection interface defines an item that is returned by
- * a query.
- * @param <X>
- */
+import javax.persistence.TupleElement;
+import java.util.List;
 
-public interface Selection<X> {
-    
+/**
+ * The Selection interface defines an item that to be
+ * returned in the query result.
+ * @param <X> the type of the selection item
+ */
+public interface Selection<X> extends TupleElement<X> {
+
     /**
-     * Return the Java type of the selection.
-     * @return the Java type of the selection item
+     * Return a selection item with the assigned alias.
+     * @param name  alias
+     * @return selection item
      */
-    Class<?> getJavaType();
+    Selection<X> alias(String name);
+
+    /**
+     * Whether the selection item is a compound selection
+     * @return boolean
+     */
+    boolean isCompoundSelection();
+
+    /**
+     * Return selection items composing a compound selection
+     * @return list of selection items
+     * @throws IllegalStateException if selection is not a compound
+     *           selection
+     */
+    List<Selection<?>> getCompoundSelectionItems();
+
 }
+

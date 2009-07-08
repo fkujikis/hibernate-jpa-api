@@ -2,7 +2,7 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence.criteria;
 
-import javax.persistence.metamodel.Member;
+import javax.persistence.metamodel.Attribute;
 
 /**
  * A join to an entity or embeddable type.
@@ -12,10 +12,10 @@ import javax.persistence.metamodel.Member;
 public interface Join<Z, X> extends From<Z, X> {
 
     /**
-     * Return the metamodel member corresponding to the join.
-     * @return metamodel member type for the join
+     * Return the metamodel attribute corresponding to the join.
+     * @return metamodel attribute corresponding to the join
      */
-    Member<? extends Z, X> getMember();
+    Attribute<? super Z, ?> getAttribute();
 
     /**
      * Return the parent of the join.

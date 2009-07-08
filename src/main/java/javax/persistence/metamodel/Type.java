@@ -3,26 +3,28 @@
 package javax.persistence.metamodel;
 
 /**
- * Instances of the type Type represent persistent object 
+ * Instances of the type Type represent persistent object
  * or attribute types.
  *
  * @param <X>  The type of the represented object or attribute
  */
 public interface Type<X> {
-	
+
 	public static enum PersistenceType {
 		ENTITY, EMBEDDABLE, MAPPED_SUPERCLASS, BASIC
 	}
-	
-    /**
-     *  Return the persistence type
-     *  @return persistence type
-     */	
-    PersistenceType getPersistenceType();
-	
-    /**
-     *  Return the represented Java type
-     *  @return Java type
-     */
-    Class<X> getJavaType();
+
+	/**
+	 * Return the persistence type.
+	 *
+	 * @return persistence type
+	 */
+	PersistenceType getPersistenceType();
+
+	/**
+	 * Return the represented Java type.
+	 *
+	 * @return Java type
+	 */
+	Class<X> getJavaType();
 }

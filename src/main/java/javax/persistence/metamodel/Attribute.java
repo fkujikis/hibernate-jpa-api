@@ -3,47 +3,68 @@
 package javax.persistence.metamodel;
 
 /**
- * Instances of the type Attribute represents persistent 
- * non-collection-valued properties or fields.
+ * An attribute of a Java type
  *
- * @param <X> The represented type containing the attribute
- * @param <T> The type of the represented attribute
+ * @param <X> The represented type that contains the attribute
+ * @param <Y> The type of the represented attribute
  */
-public interface Attribute<X, T> 
-		extends Member<X, T>, Bindable<T> {
-	
-	public static enum Multiplicity {
-		MANY_TO_ONE, ONE_TO_ONE, EMBEDDED, BASIC
+public interface Attribute<X, Y> {
+
+	public static enum PersistentAttributeType {
+		MANY_TO_ONE, ONE_TO_ONE, BASIC, EMBEDDED,
+		MANY_TO_MANY, ONE_TO_MANY, ELEMENT_COLLECTION
 	}
-	
-    /**
-     *  Return the multiplicity of the attribute.
-     *  @return multiplicity
-     */
-    Multiplicity getMultiplicity();
 
-    /**
-     *  Is the attribute an id attribute.
-     *  @return boolean indicating whether or not an id
-     */
-    boolean isId();
+	/**
+	 * Return the name of the attribute.
+	 *
+	 * @return name
+	 */
+	String getName();
 
-    /**
-     *  Is the attribute a version attribute.
-     *  @return boolean indicating whether or not a version attribute
-     */
-    boolean isVersion();
+	/**
+	 * Return the persistent attribute type for the attribute.
+	 *
+	 * @return persistent attribute type
+	 */
+	PersistentAttributeType getPersistentAttributeType();
 
-    /** 
-     *  Can the attribute be null.
-     *  @return boolean indicating whether or not the attribute can
-     * 				be null
-     */
-    boolean isOptional();
+	/**
+	 * Return the managed type representing the type in which
+	 * the attribute was declared.
+	 *
+	 * @return declaring type
+	 */
+	ManagedType<X> getDeclaringType();
 
-    /**
-     * Return the type that represents the type of the attribute.
-     * @return type of attribute
-     */
-    Type<T> getAttributeType();
+	/**
+	 * Return the Java type of the represented attribute.
+	 *
+	 * @return Java type
+	 */
+	Class<Y> getJavaType();
+
+	/**
+	 * Return the java.lang.reflect.Member for the represented
+	 * attribute.
+	 *
+	 * @return corresponding java.lang.reflect.Member
+	 */
+	java.lang.reflect.Member getJavaMember();
+
+	/**
+	 * Is the attribute an association.
+	 *
+	 * @return whether boolean indicating whether attribute
+	 *         corresponds to an association
+	 */
+	boolean isAssociation();
+
+	/**
+	 * Is the attribute collection-valued.
+	 *
+	 * @return boolean indicating whether attribute is
+	 *         collection-valued
+	 */
+	boolean isCollection();
 }

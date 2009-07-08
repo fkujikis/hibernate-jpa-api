@@ -2,21 +2,16 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence.criteria;
 
+import java.util.Collection;
+
 /**
  * Type for query expressions.
  * @param <T> the type of the expression
  */
-
 public interface Expression<T> extends Selection<T> {
 
     /**
-     * Return the Java type of the expression.
-     * @return the Java type of the expression
-     */
-    Class<T> getJavaType();
-
-    /**
-     *  Apply a predicate to test whether the expression is null.
+     *  Apply  a predicate to test whether the expression is null.
      *  @return predicate testing whether the expression is null
      */
     Predicate isNull();
@@ -26,7 +21,7 @@ public interface Expression<T> extends Selection<T> {
      *  @return predicate testing whether the expression is not null.
      */
     Predicate isNotNull();
-	
+
     /**
      * Apply a predicate to test whether the expression is a member
      * of the argument list.
@@ -36,9 +31,33 @@ public interface Expression<T> extends Selection<T> {
     Predicate in(Object... values);
 
     /**
+     * Apply a predicate to test whether the expression is a member
+     * of the argument list.
+     * @param values
+     * @return predicate testing for membership
+     */
+    Predicate in(Expression<?>... values);
+
+    /**
+     * Apply a predicate to test whether the expression is a member
+     * of the collection.
+     * @param values collection
+     * @return predicate testing for membership
+     */
+    Predicate in(Collection<?> values);
+
+    /**
+     * Apply a predicate to test whether the expression is a member
+     * of the collection.
+     * @param values expression corresponding to collection
+     * @return predicate testing for membership
+     */
+    Predicate in(Expression<Collection<?>> values);
+
+    /**
      * Perform a typecast upon the expression.
      * Warning: may result in a runtime failure.
-     * @param type 
+     * @param type
      * @return expression
      */
     <X> Expression<X> as(Class<X> type);

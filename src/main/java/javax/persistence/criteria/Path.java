@@ -2,64 +2,73 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence.criteria;
 
-import javax.persistence.metamodel.AbstractCollection;
-import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.Map;
+import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 
 /**
- * Represents a simple or compound attribute path from a 
+ * Represents a simple or compound attribute path from a
  * bound type or collection, and is a "primitive" expression.
  * @param <X>  Type referenced by the path
  */
 public interface Path<X> extends Expression<X> {
 
-    Bindable<X> getModel(); //TODO: what does this return for a collection key, value? null?
-    
     /**
-     *  Return the parent "node" in the path.
+     * Return the bindable object that corresponds to the
+     * path expression.
+     * @return bindable object corresponding to the path
+     */
+    Bindable<X> getModel();
+
+    /**
+     *  Return the parent "node" in the path or null if no parent.
      *  @return parent
      */
     Path<?> getParentPath();
-	
-    /**
-     *  Return the path corresponding to the referenced 
-     *  non-collection valued attribute.
-     *  @param model attribute
-     *  @return path corresponding to the referenced attribute
-     */
-    <Y> Path<Y> get(Attribute<? super X, Y> model);
 
     /**
-     *  Return the path corresponding to the referenced 
+     *  Return the path corresponding to the referenced
+     *  single-valued attribute.
+     *  @param attribute single-valued attribute
+     *  @return path corresponding to the referenced attribute
+     */
+    <Y> Path<Y> get(SingularAttribute<? super X, Y> attribute);
+
+    /**
+     *  Return the path corresponding to the referenced
      *  collection-valued attribute.
      *  @param collection collection-valued attribute
-     *  @return path corresponding to the referenced attribute
+     *  @return expression corresponding to the referenced attribute
      */
-    <E, C extends java.util.Collection<E>> Expression<C> get(AbstractCollection<X, C, E> collection);
+    <E, C extends java.util.Collection<E>> Expression<C> get(PluralAttribute<X, C, E> collection);
 
     /**
-     *  Return the path corresponding to the referenced 
+     *  Return the path corresponding to the referenced
      *  map-valued attribute.
-     *  @param collection map-valued attribute
-     *  @return path corresponding to the referenced attribute
+     *  @param map map-valued attribute
+     *  @return expression corresponding to the referenced attribute
      */
-    <K, V, M extends java.util.Map<K, V>> Expression<M> get(Map<X, K, V> collection);
+    <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map);
 
     /**
      *  Return an expression corresponding to the type of the path.
      *  @return expression corresponding to the type of the path
      */
     Expression<Class<? extends X>> type();
-	
 
-    //Untypesafe:
-	
+
+    //String-based:
+
     /**
-     *  Return the path corresponding to the referenced 
+     *  Return the path corresponding to the referenced
      *  attribute.
-     *  @param attName  name of the attribute
+     *  @param attributeName  name of the attribute
      *  @return path corresponding to the referenced attribute
+     *  @throws IllegalStateException if invoked on a path that
+     *          corresponds to a basic type
+     *  @throws IllegalArgumentException if attribute of the given
+     *          name does not otherwise exist
      */
-    <Y> Path<Y> get(String attName);
+    <Y> Path<Y> get(String attributeName);
 }

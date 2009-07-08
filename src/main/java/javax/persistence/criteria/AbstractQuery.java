@@ -5,10 +5,10 @@ package javax.persistence.criteria;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.metamodel.Entity;
+import javax.persistence.metamodel.EntityType;
 
 /**
- * The interface AbstractQuery defines functionality that is common
+ * The AbstractQuery interface defines functionality that is common
  * to both top-level queries and subqueries.
  * It is not intended to be used directly in query construction.
  *
@@ -16,9 +16,8 @@ import javax.persistence.metamodel.Entity;
  *         a set of root entities (which may in turn own joins)
  * All queries may have:
  *         a conjunction of restrictions
- *         an ordered list of orders
  */
-public interface AbstractQuery {
+public interface AbstractQuery<T> {
 
     /**
      * Add a query root corresponding to the given entity,
@@ -27,7 +26,7 @@ public interface AbstractQuery {
      *                 of type X
      * @return query root corresponding to the given entity
      */
-    <X> Root<X> from(Entity<X> entity);
+    <X> Root<X> from(EntityType<X> entity);
 
     /**
      * Add a query root corresponding to the given entity,
@@ -42,18 +41,18 @@ public interface AbstractQuery {
      * @return the set of query roots
      */
     Set<Root<?>> getRoots();
-	
+
     /**
      * Modify the query to restrict the query results according
      * to the specified boolean expression.
      * Replaces the previously added restriction(s), if any.
      * @param restriction  a simple or compound boolean expression
      * @return the modified query
-     */    
-    AbstractQuery where(Expression<Boolean> restriction);
+     */
+    AbstractQuery<T> where(Expression<Boolean> restriction);
 
     /**
-     * Modify the query to restrict the query results according 
+     * Modify the query to restrict the query results according
      * to the conjunction of the specified restriction predicates.
      * Replaces the previously added restriction(s), if any.
      * If no restrictions are specified, any previously added
@@ -61,18 +60,18 @@ public interface AbstractQuery {
      * @param restrictions  zero or more restriction predicates
      * @return the modified query
      */
-    AbstractQuery where(Predicate... restrictions);
+    AbstractQuery<T> where(Predicate... restrictions);
 
     /**
      * Specify the expressions that are used to form groups over
      * the query results.
      * Replaces the previous specified grouping expressions, if any.
-     * If no grouping expressions are specified, any previously 
+     * If no grouping expressions are specified, any previously
      * added grouping expressions are simply removed.
      * @param grouping  zero or more grouping expressions
      * @return the modified query
      */
-    AbstractQuery group(Expression<?>... grouping);
+    AbstractQuery<T> groupBy(Expression<?>... grouping);
 
     /**
      * Specify a restriction over the groups of the query.
@@ -80,11 +79,11 @@ public interface AbstractQuery {
      * @param restriction  a simple or compound boolean expression
      * @return the modified query
      */
-    AbstractQuery having(Expression<Boolean> restriction);
+    AbstractQuery<T> having(Expression<Boolean> restriction);
 
     /**
      * Specify restrictions over the groups of the query
-     * according the conjunction of the specified restriction 
+     * according the conjunction of the specified restriction
      * predicates.
      * Replaces the previously added restriction(s), if any.
      * If no restrictions are specified, any previously added
@@ -92,22 +91,7 @@ public interface AbstractQuery {
      * @param restrictions  zero or more restriction predicates
      * @return the modified query
      */
-    AbstractQuery having(Predicate... restrictions);
-
-    /**
-     * Specify the ordering expressions that are used to
-     * order the query results.
-     * Replaces the previous ordering expressions, if any.
-     * If no ordering expressions are specified, the previous
-     * ordering, if any, is simply removed, and results will
-     * be returned in no particular order.
-     * The left-to-right sequence of the ordering expressions
-     * determines the precedence, whereby the leftmost has highest
-     * precedence.
-     * @param o zero or more ordering expression
-     * @return the modified query.
-     */
-    AbstractQuery order(Order... o);
+    AbstractQuery<T> having(Predicate... restrictions);
 
     /**
      * Specify whether duplicate query results will be eliminated.
@@ -120,22 +104,22 @@ public interface AbstractQuery {
      *        whether they must be retained
      * @return the modified query.
      */
-    AbstractQuery distinct(boolean distinct);
-    
+    AbstractQuery<T> distinct(boolean distinct);
+
     /**
-     * Return the ordering expressions in order of precedence.
-     * @return the list of ordering expressions
+     *  Return the selection of the query
+     *  @return selection item
      */
-    List<Order> getOrderList();
+    Selection<T> getSelection();
 
     /**
      * Return a list of the grouping expressions
-     * @result the list of grouping expressions
+     * @return the list of grouping expressions
      */
     List<Expression<?>> getGroupList();
 
     /**
-     * Return the predicate that corresponds to the whereclause
+     * Return the predicate that corresponds to the where clause
      * restriction(s).
      * @return where clause predicate
      */
@@ -151,16 +135,17 @@ public interface AbstractQuery {
     /**
      * Return whether duplicate query results must be eliminated or
      * retained.
-     * @result boolean indicating whether duplicate query results must
+     * @return boolean indicating whether duplicate query results must
      *         be eliminated
      */
     boolean isDistinct();
-	
+
     /**
-     * Specify that the query is to be used as a subquery having
-     * the specified return type.
-     * @return subquery corresponding to the query
+     * Create a subquery of the query.
+     * @param type  the subquery result type
+     * @return subquery
      */
     <U> Subquery<U> subquery(Class<U> type);
-	
+
 }
+

@@ -2,7 +2,7 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence.criteria;
 
-import javax.persistence.metamodel.Entity;
+import javax.persistence.metamodel.EntityType;
 
 /**
  * A root type in the from clause.
@@ -16,5 +16,6 @@ public interface Root<X> extends From<X, X> {
      * Return the metamodel entity corresponding to the root.
      * @return metamodel entity corresponding to the root
      */
-    Entity<X> getModel();
+    EntityType<X> getModel();
 }
+
