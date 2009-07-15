@@ -5,7 +5,7 @@ package javax.persistence;
 /**
  * The TupleElement interface defines an element that is returned in
  * a query result tuple.
- * @param <T> the type of the element
+ * @param <X> the type of the element
  */
 public interface TupleElement<X> {
 
