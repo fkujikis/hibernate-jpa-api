@@ -58,6 +58,22 @@
                 <version>1.0-beta-2</version>
             </extension>
         </extensions>
+
+        <plugins>
+        	<plugin>
+	            <artifactId>maven-source-plugin</artifactId>
+	            <executions>
+	                <execution>
+	                    <id>attach-sources</id>
+	                    <phase>verify</phase>
+	                    <goals>
+	                        <goal>jar-no-fork</goal>
+	                    </goals>
+	                </execution>
+	            </executions>
+	        </plugin>
+        </plugins>
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -71,14 +87,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                    <version>2.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
