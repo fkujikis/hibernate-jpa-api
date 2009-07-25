@@ -2,18 +2,13 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.persistence.spi.LoadState;
 import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceProviderResolverHolder;
 
 /**
  * Bootstrap class that provides access to an EntityManagerFactory.
@@ -46,10 +41,7 @@ public class Persistence {
 	 */
 	public static EntityManagerFactory createEntityManagerFactory(String persistenceUnitName, Map properties) {
 		EntityManagerFactory emf = null;
-
-		if ( providers.size() == 0 ) {
-			findAllProviders();
-		}
+		List<PersistenceProvider> providers = getProviders();
 		for ( PersistenceProvider provider : providers ) {
 			emf = provider.createEntityManagerFactory( persistenceUnitName, properties );
 			if ( emf != null ) {
@@ -62,72 +54,45 @@ public class Persistence {
 		return emf;
 	}
 
+	private static List<PersistenceProvider> getProviders() {
+		return PersistenceProviderResolverHolder
+				.getPersistenceProviderResolver()
+				.getPersistenceProviders();
+	}
+
 	/**
 	 * @return Returns a <code>PersistenceUtil</code> instance.
 	 */
 	public static PersistenceUtil getPersistenceUtil() {
-		// return a dummy implementation of PersistenceUtil. Introduced for Hibernate Validator (HV-104).
-		// Needs to be changed once we start updating EntityManager and introduce JPA2
-		return new PersistenceUtil() {
+		return util;
+	}
 
+	private static PersistenceUtil util =
+			//TODO add an Hibernate specific optimization
+		new PersistenceUtil() {
 			public boolean isLoaded(Object entity, String attributeName) {
+				List<PersistenceProvider> providers = Persistence.getProviders();
+				for ( PersistenceProvider provider : providers ) {
+					final LoadState state = provider.isLoadedWithoutReference( entity, attributeName );
+					if ( state == LoadState.UNKNOWN ) continue;
+					return state == LoadState.LOADED;
+				}
+				for ( PersistenceProvider provider : providers ) {
+					final LoadState state = provider.isLoadedWithReference( entity, attributeName );
+					if ( state == LoadState.UNKNOWN ) continue;
+					return state == LoadState.LOADED;
+				}
 				return true;
 			}
 
 			public boolean isLoaded(Object object) {
+				List<PersistenceProvider> providers = Persistence.getProviders();
+				for ( PersistenceProvider provider : providers ) {
+					final LoadState state = provider.isLoaded( object );
+					if ( state == LoadState.UNKNOWN ) continue;
+					return state == LoadState.LOADED;
+				}
 				return true;
 			}
 		};
-	}
-
-
-	// Helper methods
-	private static void findAllProviders() {
-		try {
-			ClassLoader loader = Thread.currentThread().getContextClassLoader();
-			Enumeration<URL> resources = loader.getResources( "META-INF/services/" + PersistenceProvider.class.getName() );
-			Set<String> names = new HashSet<String>();
-			while ( resources.hasMoreElements() ) {
-				URL url = resources.nextElement();
-				InputStream is = url.openStream();
-				try {
-					names.addAll( providerNamesFromReader( new BufferedReader( new InputStreamReader( is ) ) ) );
-				}
-				finally {
-					is.close();
-				}
-			}
-			for ( String s : names ) {
-				Class providerClass = loader.loadClass( s );
-				providers.add( ( PersistenceProvider ) providerClass.newInstance() );
-			}
-		}
-		catch ( IOException e ) {
-			throw new PersistenceException( e );
-		}
-		catch ( InstantiationException e ) {
-			throw new PersistenceException( e );
-		}
-		catch ( IllegalAccessException e ) {
-			throw new PersistenceException( e );
-		}
-		catch ( ClassNotFoundException e ) {
-			throw new PersistenceException( e );
-		}
-	}
-
-	private static final Pattern nonCommentPattern = Pattern.compile( "^([^#]+)" );
-
-	private static Set<String> providerNamesFromReader(BufferedReader reader) throws IOException {
-		Set<String> names = new HashSet<String>();
-		String line;
-		while ( ( line = reader.readLine() ) != null ) {
-			line = line.trim();
-			Matcher m = nonCommentPattern.matcher( line );
-			if ( m.find() ) {
-				names.add( m.group().trim() );
-			}
-		}
-		return names;
-	}
 }

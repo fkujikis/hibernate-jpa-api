@@ -14,6 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.PersistenceException;
@@ -88,7 +91,6 @@ public class PersistenceProviderResolverHolder {
 			private final List<WeakReference<Class<? extends PersistenceProvider>>> resolverClasses;
 
 			public CachingPersistenceProviderResolver(ClassLoader cl) {
-				//creates a hard reference to the cl :(
 				resolverClasses = new ArrayList<WeakReference<Class<? extends PersistenceProvider>>>();
 				try {
 					Enumeration<URL> resources = cl.getResources( "META-INF/services/" + PersistenceProvider.class.getName() );
