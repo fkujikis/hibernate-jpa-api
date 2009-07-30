@@ -23,5 +23,5 @@ public interface Order {
     * Return the expression that is used for ordering.
     * @return expression used for ordering
     */
-   <T extends Comparable<T>> Expression<T> getExpression();
+   Expression<?> getExpression();
 }
