@@ -122,7 +122,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *  @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <X, Y> Join<X, Y> join(String attributeName);
+    <Y> Join<X, Y> join(String attributeName);
 
     /**
      *  Join to the specified Collection-valued attribute using an
@@ -133,7 +133,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *  @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName);
+    <Y> CollectionJoin<X, Y> joinCollection(String attributeName);
 
     /**
      *  Join to the specified Set-valued attribute using an inner
@@ -144,7 +144,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *  @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <X, Y> SetJoin<X, Y> joinSet(String attributeName);
+    <Y> SetJoin<X, Y> joinSet(String attributeName);
 
     /**
      *  Join to the specified List-valued attribute using an inner
@@ -155,7 +155,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *  @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <X, Y> ListJoin<X, Y> joinList(String attributeName);
+    <Y> ListJoin<X, Y> joinList(String attributeName);
 
     /**
      *  Join to the specified Map-valued attribute using an inner
@@ -166,7 +166,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *  @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <X, K, V> MapJoin<X, K, V> joinMap(String attributeName);
+    <K, V> MapJoin<X, K, V> joinMap(String attributeName);
 
 
     /**
@@ -179,7 +179,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *  @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <X, Y> Join<X, Y> join(String attributeName, JoinType jt);
+    <Y> Join<X, Y> join(String attributeName, JoinType jt);
 
     /**
      *  Join to the specified Collection-valued attribute using
@@ -191,7 +191,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *  @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt);
+    <Y> CollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt);
 
     /**
      *  Join to the specified Set-valued attribute using
@@ -203,7 +203,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *  @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <X, Y> SetJoin<X, Y> joinSet(String attributeName, JoinType jt);
+    <Y> SetJoin<X, Y> joinSet(String attributeName, JoinType jt);
 
     /**
      *  Join to the specified List-valued attribute using
@@ -215,7 +215,7 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *  @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <X, Y> ListJoin<X, Y> joinList(String attributeName, JoinType jt);
+    <Y> ListJoin<X, Y> joinList(String attributeName, JoinType jt);
 
     /**
      *  Join to the specified Map-valued attribute using
@@ -227,5 +227,5 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
      *  @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <X, K, V> MapJoin<X, K, V> joinMap(String attributeName, JoinType jt);
+    <K, V> MapJoin<X, K, V> joinMap(String attributeName, JoinType jt);
 }
