@@ -115,117 +115,159 @@ public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
     //String-based:
 
     /**
-     *  Join to the specified attribute using an inner join.
-     *  @param attributeName  name of the attribute for the
+     * Join to the specified attribute using an inner join.
+	 *
+	 * @param <X> The type of the source of the join; note that this method-local <X> hides the <X> defined as a type
+	 * param to {@link From}; the expectation is that the two types match.
+	 * @param <Y> The type of the joined attribute/association
+     * @param attributeName  name of the attribute for the
      *               target of the join
-     *  @return the resulting join
-     *  @throws IllegalArgumentException if attribute of the given
+     * @return the resulting join
+     * @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <Y> Join<X, Y> join(String attributeName);
+    <X, Y> Join<X, Y> join(String attributeName);
 
     /**
      *  Join to the specified Collection-valued attribute using an
      *  inner join.
-     *  @param attributeName  name of the attribute for the
+	 *
+	 * @param <X> The type of the source of the join; note that this method-local <X> hides the <X> defined as a type
+	 * param to {@link From}; the expectation is that the two types match.
+	 * @param <Y> The type of the joined attribute/association
+     * @param attributeName  name of the attribute for the
      *               target of the join
-     *  @return the resulting join
-     *  @throws IllegalArgumentException if attribute of the given
+     * @return the resulting join
+     * @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <Y> CollectionJoin<X, Y> joinCollection(String attributeName);
+    <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName);
 
     /**
      *  Join to the specified Set-valued attribute using an inner
      *  join.
-     *  @param attributeName  name of the attribute for the
+	 *
+	 * @param <X> The type of the source of the join; note that this method-local <X> hides the <X> defined as a type
+	 * param to {@link From}; the expectation is that the two types match.
+	 * @param <Y> The type of the joined attribute/association
+     * @param attributeName  name of the attribute for the
      *               target of the join
-     *  @return the resulting join
-     *  @throws IllegalArgumentException if attribute of the given
+     * @return the resulting join
+     * @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <Y> SetJoin<X, Y> joinSet(String attributeName);
+    <X, Y> SetJoin<X, Y> joinSet(String attributeName);
 
     /**
      *  Join to the specified List-valued attribute using an inner
      *  join.
-     *  @param attributeName  name of the attribute for the
+	 *
+	 * @param <X> The type of the source of the join; note that this method-local <X> hides the <X> defined as a type
+	 * param to {@link From}; the expectation is that the two types match.
+	 * @param <Y> The type of the joined attribute/association
+     * @param attributeName  name of the attribute for the
      *               target of the join
-     *  @return the resulting join
-     *  @throws IllegalArgumentException if attribute of the given
+     * @return the resulting join
+     * @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <Y> ListJoin<X, Y> joinList(String attributeName);
+    <X, Y> ListJoin<X, Y> joinList(String attributeName);
 
     /**
      *  Join to the specified Map-valued attribute using an inner
      *  join.
-     *  @param attributeName  name of the attribute for the
+	 *
+	 * @param <X> The type of the source of the join; note that this method-local <X> hides the <X> defined as a type
+	 * param to {@link From}; the expectation is that the two types match.
+	 * @param <K> The type of the key of the joined map.
+	 * @param <V> The type of the value of the joined map.
+     * @param attributeName  name of the attribute for the
      *               target of the join
-     *  @return the resulting join
-     *  @throws IllegalArgumentException if attribute of the given
+     * @return the resulting join
+     * @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <K, V> MapJoin<X, K, V> joinMap(String attributeName);
+    <X, K, V> MapJoin<X, K, V> joinMap(String attributeName);
 
 
     /**
      *  Join to the specified attribute using the given
-     *  join type.
-     *  @param attributeName  name of the attribute for the
+	 *  join type.
+	 *
+	 * @param <X> The type of the source of the join; note that this method-local <X> hides the <X> defined as a type
+	 * param to {@link From}; the expectation is that the two types match.
+	 * @param <Y> The type of the joined attribute/association
+     * @param attributeName  name of the attribute for the
      *               target of the join
-     *  @param jt  join type
-     *  @return the resulting join
-     *  @throws IllegalArgumentException if attribute of the given
+     * @param jt  join type
+     * @return the resulting join
+     * @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <Y> Join<X, Y> join(String attributeName, JoinType jt);
+    <X, Y> Join<X, Y> join(String attributeName, JoinType jt);
 
     /**
      *  Join to the specified Collection-valued attribute using
      *  the given join type.
-     *  @param attributeName  name of the attribute for the
+	 *
+	 * @param <X> The type of the source of the join; note that this method-local <X> hides the <X> defined as a type
+	 * param to {@link From}; the expectation is that the two types match.
+	 * @param <Y> The type of the joined attribute/association
+     * @param attributeName  name of the attribute for the
      *               target of the join
-     *  @param jt  join type
-     *  @return the resulting join
-     *  @throws IllegalArgumentException if attribute of the given
+     * @param jt  join type
+     * @return the resulting join
+     * @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <Y> CollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt);
+    <X, Y> CollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt);
 
     /**
      *  Join to the specified Set-valued attribute using
      *  the given join type.
-     *  @param attributeName  name of the attribute for the
+	 *
+	 * @param <X> The type of the source of the join; note that this method-local <X> hides the <X> defined as a type
+	 * param to {@link From}; the expectation is that the two types match.
+	 * @param <Y> The type of the joined attribute/association
+     * @param attributeName  name of the attribute for the
      *               target of the join
-     *  @param jt  join type
-     *  @return the resulting join
-     *  @throws IllegalArgumentException if attribute of the given
+     * @param jt  join type
+     * @return the resulting join
+     * @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <Y> SetJoin<X, Y> joinSet(String attributeName, JoinType jt);
+    <X, Y> SetJoin<X, Y> joinSet(String attributeName, JoinType jt);
 
     /**
      *  Join to the specified List-valued attribute using
      *  the given join type.
-     *  @param attributeName  name of the attribute for the
+	 *
+	 * @param <X> The type of the source of the join; note that this method-local <X> hides the <X> defined as a type
+	 * param to {@link From}; the expectation is that the two types match.
+	 * @param <Y> The type of the joined attribute/association
+     * @param attributeName  name of the attribute for the
      *               target of the join
-     *  @param jt  join type
-     *  @return the resulting join
-     *  @throws IllegalArgumentException if attribute of the given
+     * @param jt  join type
+     * @return the resulting join
+     * @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <Y> ListJoin<X, Y> joinList(String attributeName, JoinType jt);
+    <X, Y> ListJoin<X, Y> joinList(String attributeName, JoinType jt);
 
     /**
      *  Join to the specified Map-valued attribute using
      *  the given join type.
-     *  @param attributeName  name of the attribute for the
+	 *
+	 * @param <X> The type of the source of the join; note that this method-local <X> hides the <X> defined as a type
+	 * param to {@link From}; the expectation is that the two types match.
+	 * @param <K> The type of the key of the joined map.
+	 * @param <V> The type of the value of the joined map.
+     * @param attributeName  name of the attribute for the
      *               target of the join
-     *  @param jt  join type
-     *  @return the resulting join
-     *  @throws IllegalArgumentException if attribute of the given
+     * @param jt  join type
+     * @return the resulting join
+     * @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <K, V> MapJoin<X, K, V> joinMap(String attributeName, JoinType jt);
+    <X, K, V> MapJoin<X, K, V> joinMap(String attributeName, JoinType jt);
 }

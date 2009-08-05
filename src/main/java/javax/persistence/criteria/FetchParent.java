@@ -9,8 +9,8 @@ import javax.persistence.metamodel.SingularAttribute;
  * Represents an element of the from clause which may
  * function as the parent of Fetches.
  *
- * @param <Z>
- * @param <X>
+ * @param <Z> The type of the fetch source
+ * @param <X> The type of the fetched attribute/association
  */
 public interface FetchParent<Z, X> {
 
@@ -58,24 +58,32 @@ public interface FetchParent<Z, X> {
     //String-based:
 
     /**
-     *  Fetch join to the specified attribute using an inner join.
-     *  @param attributeName  name of the attribute for the
+     * Fetch join to the specified attribute using an inner join.
+	 *
+	 * @param <X> The type of the source of the fetch; note that this method-local <X> hides the <X> defined as a type
+	 * param to {@link FetchParent}; the expectation is that the two types match.
+	 * @param <Y> The type of the fetched attribute/association
+     * @param attributeName  name of the attribute for the
      *         target of the join
-     *  @return the resulting fetch join
-     *  @throws IllegalArgumentException if attribute of the given
+     * @return the resulting fetch join
+     * @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <Y> Fetch<X, Y> fetch(String attributeName);
+    <X, Y> Fetch<X, Y> fetch(String attributeName);
 
     /**
-     *  Fetch join to the specified attribute using the given
-     *  join type.
-     *  @param attributeName  name of the attribute for the
+	 * Fetch join to the specified attribute using the given
+     * join type.
+	 *
+	 * @param <X> The type of the source of the fetch; note that this method-local <X> hides the <X> defined as a type
+	 * param to {@link FetchParent}; the expectation is that the two types match.
+	 * @param <Y> The type of the fetched attribute/association
+     * @param attributeName  name of the attribute for the
      *               target of the join
      *  @param jt  join type
      *  @return the resulting fetch join
      *  @throws IllegalArgumentException if attribute of the given
      *          name does not exist
      */
-    <Y> Fetch<X, Y> fetch(String attributeName, JoinType jt);
+    <X, Y> Fetch<X, Y> fetch(String attributeName, JoinType jt);
 }
