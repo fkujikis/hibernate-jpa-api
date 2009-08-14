@@ -237,25 +237,118 @@ public interface Query {
 							  TemporalType temporalType);
 
 	/**
-	 * Get the parameters names and associated values of the
-	 * parameters that are bound for the query instance.
-	 * Returns empty map if no parameters have been bound
-	 * or if the query does not use named parameters.
-	 *
-	 * @return named parameters
-	 */
-	public Map<String, Object> getNamedParameters();
+     * Get the parameter objects corresponding to the declared
+     * parameters of the query.
+     * Returns empty set if the query has no parameters.
+     * This method is not required to be supported for native
+     * queries.
+     * @return set of the parameter objects
+     * @throws IllegalStateException if invoked on a native
+     *         query when the implementation does not support
+     *         this use
+     */
+    Set<Parameter<?>> getParameters();
 
-	/**
-	 * Get the values of the positional parameters
-	 * that are bound for the query instance.
-	 * Positional parameters are listed in order of position.
-	 * Returns empty list if no parameters have been bound
-	 * or if the query does not use positional parameters.
-	 *
-	 * @return positional parameters
-	 */
-	public List getPositionalParameters();
+    /**
+     * Get the parameter object corresponding to the declared
+     * parameter of the given name.
+     * This method is not required to be supported for native
+     * queries.
+     * @param name
+     * @return parameter object
+     * @throws IllegalArgumentException if the parameter of the
+     *         specified name does not exist
+     * @throws IllegalStateException if invoked on a native
+     *         query when the implementation does not support
+     *         this use
+     */
+    Parameter<?> getParameter(String name);
+
+    /**
+     * Get the parameter object corresponding to the declared
+     * positional parameter with the given position.
+     * This method is not required to be supported for native
+     * queries.
+     * @param position
+     * @return parameter object
+     * @throws IllegalArgumentException if the parameter with the
+     *         specified position does not exist
+     * @throws IllegalStateException if invoked on a native
+     *         query when the implementation does not support
+     *         this use
+     */
+    Parameter<?> getParameter(int position);
+
+    /**
+     * Get the parameter of the given name and type.
+     * This method is required to be supported for criteria queries
+     * only.
+     * @param name
+     * @param type
+     * @return parameter object
+     * @throws IllegalArgumentException if the parameter of the
+     *         specified name does not exist or is not assignable
+     *         to the type
+     * @throws IllegalStateException if invoked on a native
+     *         query or Java Persistence query language query when
+     *         the implementation does not support this use
+     */
+    <T> Parameter<T> getParameter(String name, Class<T> type);
+
+    /**
+     * Get the positional parameter with the given position and type.
+     * This method is required to be supported for criteria queries
+     * only.
+     * @param position
+     * @param type
+     * @return parameter object
+     * @throws IllegalArgumentException if the parameter with the
+     *         specified position does not exist or is not assignable
+     *         to the type
+     * @throws IllegalStateException if invoked on a native
+     *         query or Java Persistence query language query when
+     *         the implementation does not support this use
+     */
+    <T> Parameter<T> getParameter(int position, Class<T> type);
+
+    /**
+     * Return a boolean indicating whether a value has been bound
+     * to the parameter.
+     * @param param parameter object
+     * @return boolean indicating whether parameter has been bound
+     */
+    boolean isBound(Parameter<?> param);
+
+    /**
+     * Return the value bound to the parameter.
+     * @param param parameter object
+     * @return parameter value
+     * @throws IllegalStateException if the parameter has not been
+     *         been bound
+     */
+    <T> T getParameterValue(Parameter<T> param);
+
+    /**
+     * Return the value bound to the named parameter.
+     * @param name
+     * @return parameter value
+     * @throws IllegalStateException if the parameter has not been
+     *         been bound
+     * @throws IllegalArgumentException if the parameter of the
+     *         specified name does not exist
+     */
+    Object getParameterValue(String name);
+
+    /**
+     * Return the value bound to the positional parameter.
+     * @param position
+     * @return parameter value
+     * @throws IllegalStateException if the parameter has not been
+     *         been bound
+     * @throws IllegalArgumentException if the parameter with the
+     *         specified position does not exist
+     */
+    Object getParameterValue(int position);
 
 	/**
 	 * Set the flush mode type to be used for the query execution.

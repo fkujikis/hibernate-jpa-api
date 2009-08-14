@@ -540,17 +540,29 @@ public interface EntityManager {
 	public Query createQuery(String qlString);
 
 	/**
-	 * Create an instance of Query for executing a
+	 * Create an instance of TypedQuery for executing a
 	 * criteria query.
-	 *
-	 * @param criteriaQuery a Criteria API query definition object
-	 *
+	 * @param criteriaQuery  a criteria query object
 	 * @return the new query instance
-	 *
 	 * @throws IllegalArgumentException if the query definition is
-	 *                                  found to be invalid
+	 *       found to be invalid
 	 */
-	public Query createQuery(CriteriaQuery criteriaQuery);
+	public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery);
+
+	/**
+	 * Create an instance of TypedQuery for executing a
+	 * Java Persistence query language statement.
+	 * The select list of the query must contain only a single
+	 * item, which must be assignable to the type specified by
+	 * the resultClass argument.
+	 * @param qlString a Java Persistence query string
+	 * @param resultClass the type of the query result
+	 * @return the new query instance
+	 * @throws IllegalArgumentException if the query string is found
+	 *         to be invalid or if the query result is found to
+	 *         not be assignable to the specified type.
+	 */
+	public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass);
 
 	/**
 	 * Create an instance of Query for executing a
@@ -566,6 +578,23 @@ public interface EntityManager {
 	 *                                  found to be invalid
 	 */
 	public Query createNamedQuery(String name);
+
+	/**
+	 * Create an instance of TypedQuery for executing a
+	 * named query (in the Java Persistence query language
+	 * or in native SQL).
+	 * The select list of the query must contain only a single
+	 * item, which must be assignable to the type specified by
+	 * the resultClass argument.
+	 * @param name the name of a query defined in metadata
+	 * @param resultClass the type of the query result
+	 * @return the new query instance
+	 * @throws IllegalArgumentException if a query has not been
+	 * 		defined with the given name or if the query string is
+	 *		found to be invalid or if the query result is found to
+	 *              not be assignable to the specified type.
+	 */
+	public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass);
 
 	/**
 	 * Create an instance of Query for executing
