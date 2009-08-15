@@ -4,7 +4,7 @@
     <groupId>org.hibernate.java-persistence</groupId>
     <artifactId>jpa-api</artifactId>
     <packaging>jar</packaging>
-    <version>2.0.Beta-SNAPSHOT</version>
+    <version>2.0.Beta-20090815</version>
 
     <name>JPA API (developmental)</name>
     <description>
@@ -25,8 +25,8 @@
     </licenses>
 
     <scm>
-        <connection>scm:svn:https://svn.jboss.org/repos/hibernate/jpa-api/trunk</connection>
-        <url>http://fisheye.jboss.org/browse/Hibernate/jpa-api/trunk</url>
+        <connection>scm:svn:https://svn.jboss.org/repos/hibernate/jpa-api/tags/jpa-api-2.0.Beta-20090815</connection>
+        <url>http://fisheye.jboss.org/browse/Hibernate/jpa-api/tags/jpa-api-2.0.Beta-20090815</url>
     </scm>
 
     <developers>
