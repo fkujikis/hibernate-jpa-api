@@ -164,6 +164,6 @@ public interface Subquery<T> extends AbstractQuery<T>, Expression<T> {
      *  Return the joins that have been made from the subquery.
      *  @return joins made from this type
      */
-    java.util.Set<Join<?, ?>> getJoins();
+    java.util.Set<Join<?, ?>> getCorrelatedJoins();
 
 }
