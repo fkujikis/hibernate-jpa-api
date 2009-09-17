@@ -60,15 +60,35 @@ public interface Path<X> extends Expression<X> {
 
     //String-based:
 
-    /**
-     *  Return the path corresponding to the referenced
-     *  attribute.
-     *  @param attributeName  name of the attribute
-     *  @return path corresponding to the referenced attribute
-     *  @throws IllegalStateException if invoked on a path that
-     *          corresponds to a basic type
-     *  @throws IllegalArgumentException if attribute of the given
-     *          name does not otherwise exist
-     */
-    <Y> Path<Y> get(String attributeName);
+	/**
+	 * Create a path corresponding to the referenced attribute.
+	 *
+	 * Note: Applications using the string-based API may need to
+	 * specify the type resulting from the get operation in order
+	 * to avoid the use of Path variables.
+	 *
+	 * For example:
+	 *
+	 * CriteriaQuery<Person> q = qb.createQuery(Person.class);
+	 * Root<Person> p = q.from(Person.class);
+	 * q.select(p)
+	 * .where(qb.isMember(qb.literal("joe"),
+	 * p.<Set<String>>get("nicknames")));
+	 *
+	 * rather than:
+	 *
+	 * CriteriaQuery<Person> q = qb.createQuery(Person.class);
+	 * Root<Person> p = q.from(Person.class);
+	 * Path<Set<String>> nicknames = p.get("nicknames");
+	 * q.select(p)
+	 * .where(qb.isMember(qb.literal("joe"), nicknames));
+	 *
+	 * @param attributeName name of the attribute
+	 * @return path corresponding to the referenced attribute
+	 * @throws IllegalStateException if invoked on a path that
+	 * corresponds to a basic type
+	 * @throws IllegalArgumentException if attribute of the given
+	 * name does not otherwise exist
+	 */
+	<Y> Path<Y> get(String attributeName);
 }

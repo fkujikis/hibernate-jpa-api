@@ -2,6 +2,8 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence.criteria;
 
+import java.util.List;
+
 /**
  * The Subquery interface defines functionality that is
  * specific to subqueries.
@@ -10,12 +12,6 @@ package javax.persistence.criteria;
  * @param <T> the type of the returned selection item.
  */
 public interface Subquery<T> extends AbstractQuery<T>, Expression<T> {
-
-    /**
-     * Return the query of which this is a subquery.
-     * @return the enclosing query or subquery
-     */
-    AbstractQuery<?> getParent();
 
     /**
      * Specify the item that is to be returned in the query result.
@@ -63,6 +59,19 @@ public interface Subquery<T> extends AbstractQuery<T>, Expression<T> {
      */
     Subquery<T> groupBy(Expression<?>... grouping);
 
+	/**
+	 * Specify the expressions that are used to form groups over
+	 * the subquery results.
+	 * Replaces the previous specified grouping expressions, if any.
+	 * If no grouping expressions are specified, any previously
+	 * added grouping expressions are simply removed.
+	 * This method only overrides the return type of the
+	 * corresponding AbstractQuery method.
+	 * @param grouping list of zero or more grouping expressions
+	 * @return the modified subquery
+	 */
+	Subquery<T> groupBy(List<Expression<?>> grouping);
+
     /**
      * Specify a restriction over the groups of the subquery.
      * Replaces the previous having restriction(s), if any.
@@ -103,66 +112,72 @@ public interface Subquery<T> extends AbstractQuery<T>, Expression<T> {
     Subquery<T> distinct(boolean distinct);
 
     /**
+     * Create a subquery root correlated to a root of the
+	 * enclosing query.
+	 * @param parentRoot a root of the containing query
+	 * @return subquery root
+     */
+    <Y> Root<Y> correlate(Root<Y> parentRoot);
+
+    /**
+	 * Create a subquery join object correlated to a join object
+	 * of the enclosing query.
+	 * @param parentJoin join object of the containing query
+	 * @return subquery join
+	 */
+    <X, Y> Join<X, Y> correlate(Join<X, Y> parentJoin);
+
+    /**
+	 * Create a subquery collection join object correlated to a
+	 * collection join object of the enclosing query.
+	 * @param parentCollection join object of the containing query
+	 * @return subquery join
+     */
+    <X, Y> CollectionJoin<X, Y> correlate(CollectionJoin<X, Y> parentCollection);
+
+    /**
+	 * Create a subquery set join object correlated to a set join
+	 * object of the enclosing query.
+	 * @param parentSet join object of the containing query
+	 * @return subquery join
+     */
+    <X, Y> SetJoin<X, Y> correlate(SetJoin<X, Y> parentSet);
+
+    /**
+	 * Create a subquery list join object correlated to a list join
+	 * object of the enclosing query.
+	 * @param parentList join object of the containing query
+	 * @return subquery join
+     */
+    <X, Y> ListJoin<X, Y> correlate(ListJoin<X, Y> parentList);
+
+    /**
+	 * Create a subquery map join object correlated to a map join
+	 * object of the enclosing query.
+	 * @param parentMap join object of the containing query
+	 * @return subquery join
+     */
+    <X, K, V> MapJoin<X, K, V> correlate(MapJoin<X, K, V> parentMap);
+
+    /**
+     * Return the query of which this is a subquery.
+     * @return the enclosing query or subquery
+     */
+    AbstractQuery<?> getParent();
+
+    /**
      * Return the selection expression.
      * @return the item to be returned in the subquery result
      */
     Expression<T> getSelection();
 
     /**
-     * Correlate a root of the enclosing query to a root of
-     * the subquery and return the subquery root.
-     * @param parentRoot  a root of the containing query
-     * @return subquery root
-     */
-    <Y> Root<Y> correlate(Root<Y> parentRoot);
-
-    /**
-     * Correlate a join of the enclosing query to a join of
-     * the subquery and return the subquery join.
-     * @param parentJoin  join target of the containing query
-     * @return subquery join
-     */
-    <X, Y> Join<X, Y> correlate(Join<X, Y> parentJoin);
-
-    /**
-     * Correlate a join to a Collection-valued association or
-     * element collection in the enclosing query to a join of
-     * the subquery and return the subquery join.
-     * @param parentCollection  join target of the containing query
-     * @return subquery join
-     */
-    <X, Y> CollectionJoin<X, Y> correlate(CollectionJoin<X, Y> parentCollection);
-
-    /**
-     * Correlate a join to a Set-valued association or
-     * element collection in the enclosing query to a join of
-     * the subquery and return the subquery join.
-     * @param parentSet  join target of the containing query
-     * @return subquery join
-     */
-    <X, Y> SetJoin<X, Y> correlate(SetJoin<X, Y> parentSet);
-
-    /**
-     * Correlate a join to a List-valued association or
-     * element collection in the enclosing query to a join of
-     * the subquery and return the subquery join.
-     * @param parentList  join target of the containing query
-     * @return subquery join
-     */
-    <X, Y> ListJoin<X, Y> correlate(ListJoin<X, Y> parentList);
-
-    /**
-     * Correlate a join to a Map-valued association or
-     * element collection in the enclosing query to a join of
-     * the subquery and return the subquery join.
-     * @param parentMap  join target of the containing query
-     * @return subquery join
-     */
-    <X, K, V> MapJoin<X, K, V> correlate(MapJoin<X, K, V> parentMap);
-
-    /**
-     *  Return the joins that have been made from the subquery.
-     *  @return joins made from this type
+	 * Return the joins that have been made from the subquery.
+	 * Does not include joins from map keys, if any.
+	 * Returns empty set if there are no joins made from the
+	 * subquery.
+	 * Modifications to the set do not affect the query.
+	 * @return joins made from this type
      */
     java.util.Set<Join<?, ?>> getCorrelatedJoins();
 

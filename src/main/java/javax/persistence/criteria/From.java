@@ -21,93 +21,94 @@ import javax.persistence.metamodel.SetAttribute;
 public interface From<Z, X> extends Path<X>, FetchParent<Z, X> {
 
     /**
-     *  Return the joins that have been made from this type.
-     *  @return joins made from this type
+     * Return the joins that have been made from this bound type.
+	 * Does not include joins from map keys, if any.
+	 * Returns empty set if no joins have been made from this
+	 * bound type.
+	 * Modifications to the set do not affect the query.
+	 * @return joins made from this type
      */
     java.util.Set<Join<X, ?>> getJoins();
 
     /**
-     *  Join to the specified single-valued attribute using an
-     *  inner join.
-     *  @param attribute  target of the join
-     *  @return the resulting join
+     * Create an inner join to the specified single-valued
+	 * attribute.
+	 * @param attribute target of the join
+	 * @return the resulting join
      */
     <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute);
 
     /**
-     *  Join to the specified single-valued attribute using the
-     *  given join type.
-     *  @param attribute  target of the join
-     *  @param jt  join type
-     *  @return the resulting join
+     *  Create a join to the specified single-valued attribute
+	 * using the given join type.
+	 * @param attribute target of the join
+	 * @param jt join type
+	 * @return the resulting join
      */
     <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute, JoinType jt);
 
     /**
-     *  Join to the specified Collection-valued attribute using
-     *  an inner join.
-     *  @param collection  target of the join
-     *  @return the resulting join
+     * Create an inner join to the specified Collection-valued
+	 * attribute.
+	 * @param collection target of the join
+	 * @return the resulting join
      */
     <Y> CollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection);
 
     /**
-     *  Join to the specified Set-valued attribute using an inner
-     *  join.
-     *  @param set  target of the join
-     *  @return the resulting join
+     * Create an inner join to the specified Set-valued attribute.
+	 * @param set target of the join
+	 * @return the resulting join
      */
     <Y> SetJoin<X, Y> join(SetAttribute<? super X, Y> set);
 
     /**
-     *  Join to the specified List-valued attribute using an inner
-     *  join.
-     *  @param list  target of the join
-     *  @return the resulting join
+     * Create an inner join to the specified List-valued attribute.
+	 * @param list target of the join
+	 * @return the resulting join
      */
     <Y> ListJoin<X, Y> join(ListAttribute<? super X, Y> list);
 
     /**
-     *  Join to the specified Map-valued attribute using an inner
-     *  join.
-     *  @param map  target of the join
-     *  @return the resulting join
+     * Create an inner join to the specified Map-valued attribute.
+     * @param map  target of the join
+     * @return the resulting join
      */
     <K, V> MapJoin<X, K, V> join(MapAttribute<? super X, K, V> map);
 
     /**
-     *  Join to the specified Collection-valued attribute
-     *  using the given join type.
-     *  @param collection  target of the join
-     *  @param jt  join type
-     *  @return the resulting join
+     * Create a join to the specified Collection-valued attribute
+	 * using the given join type.
+	 * @param collection target of the join
+	 * @param jt join type
+	 * @return the resulting join
      */
     <Y> CollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection, JoinType jt);
 
     /**
-     *  Join to the specified Set-valued attribute using the given
-     *  join type.
-     *  @param set  target of the join
-     *  @param jt  join type
-     *  @return the resulting join
+     * Create a join to the specified Set-valued attribute using
+	 * the given join type.
+	 * @param set target of the join
+	 * @param jt join type
+	 * @return the resulting join
      */
     <Y> SetJoin<X, Y> join(SetAttribute<? super X, Y> set, JoinType jt);
 
     /**
-     *  Join to the specified List-valued attribute using the
-     *  given join type.
-     *  @param list  target of the join
-     *  @param jt  join type
-     *  @return the resulting join
+     * Create a join to the specified List-valued attribute using
+	 * the given join type.
+	 * @param list target of the join
+	 * @param jt join type
+	 * @return the resulting join
      */
     <Y> ListJoin<X, Y> join(ListAttribute<? super X, Y> list, JoinType jt);
 
     /**
-     *  Join to the specified Map-valued attribute using the
-     *  given join type.
-     *  @param map  target of the join
-     *  @param jt  join type
-     *  @return the resulting join
+     * Create a join to the specified Map-valued attribute using
+	 * the given join type.
+	 * @param map target of the join
+	 * @param jt join type
+	 * @return the resulting join
      */
     <K, V> MapJoin<X, K, V> join(MapAttribute<? super X, K, V> map, JoinType jt);
 

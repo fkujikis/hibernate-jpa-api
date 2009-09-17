@@ -22,25 +22,19 @@ public interface AbstractQuery<T> {
     /**
      * Add a query root corresponding to the given entity,
      * forming a cartesian product with any existing roots.
-     * @param entity  metamodel entity representing the entity
-     *                 of type X
-     * @return query root corresponding to the given entity
-     */
-    <X> Root<X> from(EntityType<X> entity);
-
-    /**
-     * Add a query root corresponding to the given entity,
-     * forming a cartesian product with any existing roots.
      * @param entityClass  the entity class
      * @return query root corresponding to the given entity
      */
     <X> Root<X> from(Class<X> entityClass);
 
     /**
-     * Return the query roots.
-     * @return the set of query roots
+     * Add a query root corresponding to the given entity,
+     * forming a cartesian product with any existing roots.
+     * @param entity  metamodel entity representing the entity
+     *                 of type X
+     * @return query root corresponding to the given entity
      */
-    Set<Root<?>> getRoots();
+    <X> Root<X> from(EntityType<X> entity);
 
     /**
      * Modify the query to restrict the query results according
@@ -72,6 +66,17 @@ public interface AbstractQuery<T> {
      * @return the modified query
      */
     AbstractQuery<T> groupBy(Expression<?>... grouping);
+
+	/**
+	 * Specify the expressions that are used to form groups over
+	 * the query results.
+	 * Replaces the previous specified grouping expressions, if any.
+	 * If no grouping expressions are specified, any previously
+	 * added grouping expressions are simply removed.
+	 * @param grouping list of zero or more grouping expressions
+	 * @return the modified query
+	 */
+	AbstractQuery<T> groupBy(List<Expression<?>> grouping);
 
     /**
      * Specify a restriction over the groups of the query.
@@ -107,16 +112,23 @@ public interface AbstractQuery<T> {
     AbstractQuery<T> distinct(boolean distinct);
 
     /**
+     * Create a subquery of the query.
+     * @param type  the subquery result type
+     * @return subquery
+     */
+    <U> Subquery<U> subquery(Class<U> type);
+
+    /**
+     * Return the query roots.
+     * @return the set of query roots
+     */
+    Set<Root<?>> getRoots();
+
+    /**
      *  Return the selection of the query
      *  @return selection item
      */
     Selection<T> getSelection();
-
-    /**
-     * Return a list of the grouping expressions
-     * @return the list of grouping expressions
-     */
-    List<Expression<?>> getGroupList();
 
     /**
      * Return the predicate that corresponds to the where clause
@@ -124,6 +136,12 @@ public interface AbstractQuery<T> {
      * @return where clause predicate
      */
     Predicate getRestriction();
+
+    /**
+     * Return a list of the grouping expressions
+     * @return the list of grouping expressions
+     */
+    List<Expression<?>> getGroupList();
 
     /**
      * Return the predicate that corresponds to the restriction(s)
@@ -140,12 +158,15 @@ public interface AbstractQuery<T> {
      */
     boolean isDistinct();
 
-    /**
-     * Create a subquery of the query.
-     * @param type  the subquery result type
-     * @return subquery
-     */
-    <U> Subquery<U> subquery(Class<U> type);
-
+	/**
+	 * Return the result type of the query or subquery.
+	 * If a result type was specified as an argument to the
+	 * createQuery or subquery method, that type will be returned.
+	 * If the query was created using the createTupleQuery
+	 * method, the result type is Tuple.
+	 * Otherwise, the result type is Object.
+	 * @return result type
+	 */
+	Class<T> getResultType();
 }
 

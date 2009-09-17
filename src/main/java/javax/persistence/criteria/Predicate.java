@@ -31,7 +31,10 @@ public interface Predicate extends Expression<Boolean> {
 
     /**
      * Return the top-level conjuncts or disjuncts of the predicate.
-     * @return list of boolean expressions forming the predicate
+	 * Returns empty list if there are no top-level conjuncts or
+	 * disjuncts of the predicate.
+	 * Modifications to the list do not affect the query.
+	 * @return list of boolean expressions forming the predicate
      */
     List<Expression<Boolean>> getExpressions();
 

@@ -13,8 +13,7 @@ import javax.persistence.metamodel.CollectionAttribute;
  * @param <Z> The source type of the join
  * @param <E> The element type of the target Collection
  */
-public interface CollectionJoin<Z, E>
-		extends PluralJoin<Z, Collection<E>, E> {
+public interface CollectionJoin<Z, E> extends PluralJoin<Z, Collection<E>, E> {
 
 	/**
 	 * Return the metamodel representation for the collection

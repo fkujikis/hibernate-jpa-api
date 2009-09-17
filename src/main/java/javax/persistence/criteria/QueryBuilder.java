@@ -239,6 +239,16 @@ public interface QueryBuilder {
 	Predicate and(Expression<Boolean> x, Expression<Boolean> y);
 
 	/**
+	 * Create a conjunction of the given restriction predicates.
+	 * A conjunction of zero predicates is true.
+	 *
+	 * @param restrictions zero or more restriction predicates
+	 *
+	 * @return and predicate
+	 */
+	Predicate and(Predicate... restrictions);
+
+	/**
 	 * Create a disjunction of the given boolean expressions.
 	 *
 	 * @param x boolean expression
@@ -250,19 +260,9 @@ public interface QueryBuilder {
 
 	/**
 	 * Create a conjunction of the given restriction predicates.
-	 * A conjunction of zero predicates is true.
-	 *
-	 * @param restriction zero or more restriction predicates
-	 *
-	 * @return and predicate
-	 */
-	Predicate and(Predicate... restrictions);
-
-	/**
-	 * Create a conjunction of the given restriction predicates.
 	 * A disjunction of zero predicates is false.
 	 *
-	 * @param restriction zero or more restriction predicates
+	 * @param restrictions zero or more restriction predicates
 	 *
 	 * @return or predicate
 	 */
