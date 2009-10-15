@@ -1,4 +1,5 @@
 usePlugin('java')
+usePlugin('maven')
 
 configurations {
     mavenDeployers
