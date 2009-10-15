@@ -1,7 +1,13 @@
 usePlugin('java')
 usePlugin('maven')
 
+repositories {
+    // needed to resolve the maven webdav wagon provider
+    mavenCentral()
+}
+
 configurations {
+    // classpath config used for maven deployers (wagon providers)
     mavenDeployers
 }
 
