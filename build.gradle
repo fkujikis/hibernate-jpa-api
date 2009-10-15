@@ -16,7 +16,7 @@ dependencies {
 }
 
 group = 'org.hibernate.java-persistence'
-version = '2.0-cr-1'
+version = '2.0-SNAPSHOT'
 
 // gradle uses 'build/' by default
 buildDirName = "target"
