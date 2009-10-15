@@ -2,12 +2,15 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence.metamodel;
 
+import java.util.Set;
+
 /**
  * Provides access to the metamodel of persistent
  * entities in the persistence unit.
+ *
+ * @since Java Persistence 2.0
  */
 public interface Metamodel {
-
 	/**
 	 * Return the metamodel entity type representing the entity.
 	 *
@@ -29,7 +32,7 @@ public interface Metamodel {
 	 *
 	 * @throws IllegalArgumentException if not a managed class
 	 */
-	<X> ManagedType<X> type(Class<X> cls);
+	<X> ManagedType<X> managedType(Class<X> cls);
 
 	/**
 	 * Return the metamodel embeddable type representing the
@@ -48,20 +51,20 @@ public interface Metamodel {
 	 *
 	 * @return the metamodel managed types
 	 */
-	java.util.Set<ManagedType<?>> getManagedTypes();
+	Set<ManagedType<?>> getManagedTypes();
 
 	/**
 	 * Return the metamodel entity types.
 	 *
 	 * @return the metamodel entity types
 	 */
-	java.util.Set<EntityType<?>> getEntities();
+	Set<EntityType<?>> getEntities();
 
 	/**
-	 * Return the metamodel embeddable types.
+	 * Return the metamodel embeddable types.  Returns empty set
+	 * if there are no embeddable types.
 	 *
 	 * @return the metamodel embeddable types
 	 */
-	java.util.Set<EmbeddableType<?>> getEmbeddables();
+	Set<EmbeddableType<?>> getEmbeddables();
 }
-

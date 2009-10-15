@@ -6,24 +6,29 @@ import java.util.List;
 
 /**
  * Determine the list of persistence providers available in the
- * runtime environment
- * <p/>
- * Persistence providers are identified by the presence of
- * META-INF/services/javax.persistence.spi.PersistenceProvider
- * files following the Service Provider pattern.
- * <p/>
- * Each META-INF/services/javax.persistence.spi.PersistenceProvider * file contains the name of the provider implementation class of the
- * javax.persistence.spi.PersistenceProvider interface.
- * <p/>
- * Implementations must be thread-safe.
+ * runtime environment.
+ *
+ * <p> Implementations must be thread-safe.
+ *
+ * <p> Note that the <code>getPersistenceProviders</code> method can potentially
+ * be called many times: it is recommended that the implementation
+ * of this method make use of caching.
+ *
+ * @see PersistenceProvider
+ * @since Java Persistence 2.0
  */
 public interface PersistenceProviderResolver {
 	/**
-	 * Returns a list of PersistenceProvider implementations
+	 * Returns a list of the <code>PersistenceProvider</code> implementations
 	 * available in the runtime environment.
 	 *
-	 * @return list of persistence providers available
+	 * @return list of the persistence providers available
 	 *         in the environment
 	 */
 	List<PersistenceProvider> getPersistenceProviders();
+
+	/**
+	 * Clear cache of providers.
+	 */
+	void clearCachedProviders();
 }

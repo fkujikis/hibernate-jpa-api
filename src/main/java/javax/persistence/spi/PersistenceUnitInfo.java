@@ -2,66 +2,85 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence.spi;
 
-import java.net.URL;
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.Properties;
-import javax.persistence.Caching;
+import java.net.URL;
+import javax.persistence.SharedCacheMode;
 import javax.persistence.ValidationMode;
-import javax.sql.DataSource;
 
 /**
- * Interface implemented by the container and used by the * persistence provider when creating an EntityManagerFactory.
+ * Interface implemented by the container and used by the
+ * persistence provider when creating an {@link javax.persistence.EntityManagerFactory}.
+ *
+ * @since Java Persistence 1.0
  */
 public interface PersistenceUnitInfo {
+
 	/**
-	 * @return The name of the persistence unit.
-	 *         Corresponds to the name attribute in the persistence.xml file.
+	 * Returns the name of the persistence unit. Corresponds to the
+	 * <code>name</code> attribute in the <code>persistence.xml<code> file.
+	 *
+	 * @return the name of the persistence unit
 	 */
 	public String getPersistenceUnitName();
 
 	/**
-	 * @return The fully qualified name of the persistence provider
-	 *         implementation class.
-	 *         Corresponds to the provider element in the persistence.xml
-	 *         file.
+	 * Returns the fully qualified name of the persistence provider
+	 * implementation class. Corresponds to the <code>provider</code> element in
+	 * the <code>persistence.xml</code> file.
+	 *
+	 * @return the fully qualified name of the persistence provider
+	 *         implementation class
 	 */
 	public String getPersistenceProviderClassName();
 
 	/**
-	 * @return The transaction type of the entity managers created
-	 *         by the EntityManagerFactory.
-	 *         The transaction type corresponds to the transaction-type
-	 *         attribute in the persistence.xml file.
+	 * Returns the transaction type of the entity managers created by
+	 * the <code>EntityManagerFactory</code>. The transaction type corresponds to
+	 * the <code>transaction-type</code> attribute in the <code>persistence.xml</code> file.
+	 *
+	 * @return transaction type of the entity managers created
+	 *         by the EntityManagerFactory
 	 */
 	public PersistenceUnitTransactionType getTransactionType();
 
 	/**
-	 * @return The JTA-enabled data source to be used by the
-	 *         persistence provider.
-	 *         The data source corresponds to the jta-data-source
-	 *         element in the persistence.xml file or is provided at
-	 *         deployment or by the container.
+	 * Returns the JTA-enabled data source to be used by the
+	 * persistence provider. The data source corresponds to the
+	 * <code>jta-data-source</code> element in the <code>persistence.xml</code> file or is
+	 * provided at deployment or by the container.
+	 *
+	 * @return the JTA-enabled data source to be used by the
+	 *         persistence provider
 	 */
 	public DataSource getJtaDataSource();
 
 	/**
-	 * @return The non-JTA-enabled data source to be used by the
+	 * Returns the non-JTA-enabled data source to be used by the
+	 * persistence provider for accessing data outside a JTA
+	 * transaction. The data source corresponds to the named
+	 * <code>non-jta-data-source</code> element in the <code>persistence.xml</code> file or
+	 * provided at deployment or by the container.
+	 *
+	 * @return the non-JTA-enabled data source to be used by the
 	 *         persistence provider for accessing data outside a JTA
-	 *         transaction.
-	 *         The data source corresponds to the non-jta-data-source
-	 *         element in the persistence.xml file or provided at
-	 *         deployment or by the container.
+	 *         transaction
 	 */
 	public DataSource getNonJtaDataSource();
 
 	/**
-	 * @return The list of mapping file names that the persistence
+	 * Returns the list of the names of the mapping files that the
+	 * persistence provider must load to determine the mappings for
+	 * the entity classes. The mapping files must be in the standard
+	 * XML mapping format, be uniquely named and be resource-loadable
+	 * from the application classpath.  Each mapping file name
+	 * corresponds to a <code>mapping-file</code> element in the
+	 * <code>persistence.xml</code> file.
+	 *
+	 * @return the list of mapping file names that the persistence
 	 *         provider must load to determine the mappings for the entity
-	 *         classes. The mapping files must be in the standard XML
-	 *         mapping format, be uniquely named and be resource-loadable
-	 *         from the application classpath.
-	 *         Each mapping file name corresponds to a mapping-file
-	 *         element in the persistence.xml file.
+	 *         classes
 	 */
 	public List<String> getMappingFileNames();
 
@@ -69,14 +88,14 @@ public interface PersistenceUnitInfo {
 	 * Returns a list of URLs for the jar files or exploded jar
 	 * file directories that the persistence provider must examine
 	 * for managed classes of the persistence unit. Each URL
-	 * corresponds to a jar-file element in the
-	 * persistence.xml file. A URL will either be a file:
-	 * URL referring to a jar file or referring to a directory
+	 * corresponds to a <code>jar-file</code> element in the
+	 * <code>persistence.xml</code> file. A URL will either be a
+	 * file: URL referring to a jar file or referring to a directory
 	 * that contains an exploded jar file, or some other URL from
 	 * which an InputStream in jar format can be obtained.
 	 *
 	 * @return a list of URL objects referring to jar files or
-	 *         directories.
+	 *         directories
 	 */
 	public List<URL> getJarFileUrls();
 
@@ -90,57 +109,83 @@ public interface PersistenceUnitInfo {
 	 * file, or some other URL from which an InputStream in jar
 	 * format can be obtained.
 	 *
-	 * @return a URL referring to a jar file or directory.
+	 * @return a URL referring to a jar file or directory
 	 */
 	public URL getPersistenceUnitRootUrl();
 
 	/**
-	 * @return The list of the names of the classes that the
-	 *         persistence provider must add it to its set of managed
-	 *         classes. Each name corresponds to a class element
-	 *         in the persistence.xml file.
+	 * Returns the list of the names of the classes that the
+	 * persistence provider must add to its set of managed
+	 * classes. Each name corresponds to a named <code>class</code> element in the
+	 * <code>persistence.xml</code> file.
+	 *
+	 * @return the list of the names of the classes that the
+	 *         persistence provider must add to its set of managed
+	 *         classes
 	 */
 	public List<String> getManagedClassNames();
 
 	/**
-	 * @return Whether classes in the root of the persistence
+	 * Returns whether classes in the root of the persistence unit
+	 * that have not been explicitly listed are to be included in the
+	 * set of managed classes. This value corresponds to the
+	 * <code>exclude-unlisted-classes</code> element in the <code>persistence.xml</code> file.
+	 *
+	 * @return whether classes in the root of the persistence
 	 *         unit that have not been explicitly listed are to be
-	 *         included in the set of managed classes.
-	 *         This value corresponds to the exclude-unlisted-classes
-	 *         element in the persistence.xml file.
+	 *         included in the set of managed classes
 	 */
 	public boolean excludeUnlistedClasses();
 
 	/**
-	 * @return The specification of how the provider must use
-	 *         a second-level cache for the persistence unit
-	 *         The result of this method corresponds to the caching
-	 *         element in the persistence.xml file.
+	 * Returns the specification of how the provider must use
+	 * a second-level cache for the persistence unit.
+	 * The result of this method corresponds to the <code>shared-cache-mode</code>
+	 * element in the <code>persistence.xml</code> file.
+	 *
+	 * @return the second-level cache mode that must be used by the
+	 *         provider for the persistence unit
+	 *
+	 * @since Java Persistence 2.0
 	 */
-	public Caching getCaching();
+	public SharedCacheMode getSharedCacheMode();
 
 	/**
-	 * @return The validation mode to be used by the
-	 *         persistence provider for the persistence unit.
-	 *         The validation mode corresponds to the validation-mode
-	 *         element in the persistence.xml file.
+	 * Returns the validation mode to be used by the persistence
+	 * provider for the persistence unit.  The validation mode
+	 * corresponds to the <code>validation-mode</code> element in the
+	 * <code>persistence.xml</code> file.
+	 *
+	 * @return the validation mode to be used by the
+	 *         persistence provider for the persistence unit
+	 *
+	 * @since Java Persistence 2.0
 	 */
 	public ValidationMode getValidationMode();
 
 	/**
-	 * @return Properties object. Each property corresponds
-	 *         to a property element in the persistence.xml file
+	 * Returns a properties object. Each property corresponds to a
+	 * <code>property</code> element in the <code>persistence.xml</code> file.
+	 *
+	 * @return Properties object
 	 */
 	public Properties getProperties();
 
 	/**
+	 * Returns the schema version of the <code>persistence.xml</code> file.
+	 *
 	 * @return persistence.xml schema version
+	 *
+	 * @since Java Persistence 2.0
 	 */
-	public String PersistenceXMLSchemaVersion();
+	public String getPersistenceXMLSchemaVersion();
 
 	/**
+	 * Returns ClassLoader that the provider may use to load any
+	 * classes, resources, or open URLs.
+	 *
 	 * @return ClassLoader that the provider may use to load any
-	 *         classes, resources, or open URLs.
+	 *         classes, resources, or open URLs
 	 */
 	public ClassLoader getClassLoader();
 
@@ -148,30 +193,30 @@ public interface PersistenceUnitInfo {
 	 * Add a transformer supplied by the provider that will be
 	 * called for every new class definition or class redefinition
 	 * that gets loaded by the loader returned by the
-	 * PersistenceUnitInfo.getClassLoader method. The transformer
+	 * {@link PersistenceUnitInfo#getClassLoader} method. The transformer
 	 * has no effect on the result returned by the
-	 * PersistenceUnitInfo.getNewTempClassLoader method.
+	 * {@link PersistenceUnitInfo#getNewTempClassLoader} method.
 	 * Classes are only transformed once within the same classloading
 	 * scope, regardless of how many persistence units they may be
 	 * a part of.
 	 *
-	 * @param transformer A provider-supplied transformer that the
-	 * Container invokes at class-(re)definition time
+	 * @param transformer provider-supplied transformer that the
+	 * container invokes at class-(re)definition time
 	 */
 	public void addTransformer(ClassTransformer transformer);
 
 	/**
-	 * Return a new instance of a ClassLoader that the provider
-	 * may use to temporarily load any classes, resources, or
-	 * open URLs. The scope and classpath of this loader is
-	 * exactly the same as that of the loader returned by
-	 * PersistenceUnitInfo.getClassLoader. None of the classes loaded
+	 * Return a new instance of a ClassLoader that the provider may
+	 * use to temporarily load any classes, resources, or open
+	 * URLs. The scope and classpath of this loader is exactly the
+	 * same as that of the loader returned by {@link
+	 * PersistenceUnitInfo#getClassLoader}. None of the classes loaded
 	 * by this class loader will be visible to application
-	 * components. The provider may only use this ClassLoader
-	 * within the scope of the createContainerEntityManagerFactory
-	 * call.
+	 * components. The provider may only use this ClassLoader within
+	 * the scope of the {@link
+	 * PersistenceProvider#createContainerEntityManagerFactory} call.
 	 *
-	 * @return Temporary ClassLoader with same visibility as current
+	 * @return temporary ClassLoader with same visibility as current
 	 *         loader
 	 */
 	public ClassLoader getNewTempClassLoader();

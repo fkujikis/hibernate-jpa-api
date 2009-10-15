@@ -2,25 +2,37 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence;
 
+import java.lang.annotation.Target;
+import java.lang.annotation.Retention;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
-import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import java.lang.annotation.Target;
 
 /**
- * This annotation must be specified for persistent fields or properties of type Date and Calendar.
- * It may only be specified for fields or properties of these types.
+ * This annotation must be specified for persistent fields
+ * or properties of type <code>java.util.Date</code> and
+ * <code>java.util.Calendar</code>. It may only be specified for fields
+ * or properties of these types.
+ * <p/>
+ * The <code>Temporal</code> annotation may be used in
+ * conjunction with the {@link Basic} annotation, the {@link Id}
+ * annotation, or the {@link ElementCollection} annotation (when
+ * the element collection value is of such a temporal type.
  *
- * The Temporal annotation may be used in conjunction with the Basic annotation.
+ * <pre>
+ *     Example:
  *
- * @author Emmanuel Bernard
+ *     &#064;Temporal(DATE)
+ *     protected java.util.Date endDate;
+ * </pre>
+ *
+ * @since Java Persistence 1.0
  */
-@Target({METHOD, FIELD})
+@Target({ METHOD, FIELD })
 @Retention(RUNTIME)
 public @interface Temporal {
 	/**
-	 * The type used in mapping java.util.Date or java.util.Calendar
+	 * The type used in mapping <code>java.util.Date</code> or <code>java.util.Calendar</code>.
 	 */
 	TemporalType value();
 }

@@ -2,21 +2,22 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence;
 
-import java.lang.annotation.ElementType;
+import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
 
 /**
- * Declares one or more PersistenceUnit annotations
+ * Declares one or more {@link PersistenceUnit} annotations.
  *
- * @author <a href="mailto:bill@jboss.org">Bill Burke</a>
+ * @since Java Persistence 1.0
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
+
+@Target({ TYPE })
+@Retention(RUNTIME)
 public @interface PersistenceUnits {
 	/**
-	 * One or more PersistenceUnit annotations
+	 * (Required) One or more {@link PersistenceUnit} annotations.
 	 */
 	PersistenceUnit[] value();
 }

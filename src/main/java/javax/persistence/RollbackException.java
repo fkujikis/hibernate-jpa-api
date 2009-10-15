@@ -3,43 +3,49 @@
 package javax.persistence;
 
 /**
- * Thrown by the persistence provider when the EntityTransaction.commit() fails
+ * Thrown by the persistence provider when
+ * {@link EntityTransaction#commit() EntityTransaction.commit()} fails.
  *
- * @author Emmanuel Bernard
+ * @see javax.persistence.EntityTransaction#commit()
+ * @since Java Persistence 1.0
  */
 public class RollbackException extends PersistenceException {
 	/**
-	 * Constructs a new RollbackException exception with null as its detail message
+	 * Constructs a new <code>RollbackException</code> exception
+	 * with <code>null</code> as its detail message.
 	 */
 	public RollbackException() {
 		super();
 	}
 
 	/**
-	 * Constructs a new RollbackException exception with the specified cause
+	 * Constructs a new <code>RollbackException</code> exception
+	 * with the specified detail message.
 	 *
-	 * @param cause The detail cause
-	 */
-	public RollbackException(Throwable cause) {
-		super( cause );
-	}
-
-	/**
-	 * Constructs a new RollbackException exception with the specified detail message
-	 *
-	 * @param message The detail message
+	 * @param message the detail message.
 	 */
 	public RollbackException(String message) {
 		super( message );
 	}
 
 	/**
-	 * Constructs a new RollbackException exception with the specified detail message and cause
+	 * Constructs a new <code>RollbackException</code> exception
+	 * with the specified detail message and cause.
 	 *
-	 * @param message The detail message
-	 * @param cause The detail cause
+	 * @param message the detail message.
+	 * @param cause the cause.
 	 */
 	public RollbackException(String message, Throwable cause) {
 		super( message, cause );
+	}
+
+	/**
+	 * Constructs a new <code>RollbackException</code> exception
+	 * with the specified cause.
+	 *
+	 * @param cause the cause.
+	 */
+	public RollbackException(Throwable cause) {
+		super(cause);
 	}
 }

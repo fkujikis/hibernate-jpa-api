@@ -2,21 +2,39 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence;
 
-import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
+import java.lang.annotation.Retention;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This annotation groups PrimaryKeyJoinColumn annotations. It is used to map composite foreign keys.
+ * Groups {@link PrimaryKeyJoinColumn} annotations.
+ * It is used to map composite foreign keys.
  *
- * @author Emmanuel Bernard
+ * <pre>
+ *    Example: ValuedCustomer subclass
+ *
+ *    &#064;Entity
+ *    &#064;Table(name="VCUST")
+ *    &#064;DiscriminatorValue("VCUST")
+ *    &#064;PrimaryKeyJoinColumns({
+ *        &#064;PrimaryKeyJoinColumn(name="CUST_ID",
+ *            referencedColumnName="ID"),
+ *        &#064;PrimaryKeyJoinColumn(name="CUST_TYPE",
+ *            referencedColumnName="TYPE")
+ *    })
+ *    public class ValuedCustomer extends Customer { ... }
+ * </pre>
+ *
+ * @since Java Persistence 1.0
  */
-@Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
+@Target({ TYPE, METHOD, FIELD })
+@Retention(RUNTIME)
 public @interface PrimaryKeyJoinColumns {
 	/**
-	 * One or more PrimaryKeyJoinColumn annotations
+	 * One or more <code>PrimaryKeyJoinColumn</code> annotations.
 	 */
 	PrimaryKeyJoinColumn[] value();
 }

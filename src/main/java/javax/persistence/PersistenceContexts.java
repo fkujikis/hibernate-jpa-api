@@ -2,22 +2,25 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence;
 
-import java.lang.annotation.ElementType;
+import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
 
 /**
- * Declares one or more PersistenceContext annotations. It is used to express a dependency on
- * container-managed entity manager persistence contexts.
+ * Declares one or more {@link PersistenceContext} annotations.
+ * It is used to express a dependency on container-managed
+ * entity manager persistence contexts.
  *
- * @author <a href="mailto:bill@jboss.org">Bill Burke</a>
+ *@see PersistenceContext
+ *
+ * @since Java Persistence 1.0
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
+@Target({TYPE})
+@Retention(RUNTIME)
 public @interface PersistenceContexts {
-	/**
-	 * One or more persistence context
-	 */
-	PersistenceContext[] value();
+
+    /** (Required) One or more <code>PersistenceContext</code> annotations. */
+    PersistenceContext[] value();
+
 }

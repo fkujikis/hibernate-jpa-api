@@ -10,74 +10,83 @@ import java.util.Set;
 import javax.persistence.Tuple;
 
 /**
- * Factory object for queries, select lists, restrictions,
- * expressions, orderings
- * Note that Predicate is used instead of Expression<Boolean>
+ * Used to construct criteria queries, compound selections,
+ * expressions, predicates, orderings.
+ *
+ * <p> Note that <code>Predicate</code> is used instead of <code>Expression&#060;Boolean&#062;</code>
  * in this API in order to work around the fact that Java
  * generics are not compatible with varags.
+ *
+ * @since Java Persistence 2.0
  */
-public interface QueryBuilder {
+public interface CriteriaBuilder {
 
 	/**
-	 * Create a Criteria query object.
+	 * Create a <code>CriteriaQuery</code> object.
 	 *
-	 * @return query object
+	 * @return criteria query object
 	 */
 	CriteriaQuery<Object> createQuery();
 
 	/**
-	 * Create a Criteria query object with the specified result
+	 * Create a <code>CriteriaQuery</code> object with the specified result
 	 * type.
 	 *
 	 * @param resultClass type of the query result
 	 *
-	 * @return query object
+	 * @return criteria query object
 	 */
 	<T> CriteriaQuery<T> createQuery(Class<T> resultClass);
 
 	/**
-	 * Create a Criteria query object that returns a tuple of
+	 * Create a <code>CriteriaQuery</code> object that returns a tuple of
 	 * objects as its result.
 	 *
-	 * @return query object
+	 * @return criteria query object
 	 */
 	CriteriaQuery<Tuple> createTupleQuery();
 
 
+	// selection construction methods:
+
 	/**
-	 * Define a selection item corresponding to a constructor.
+	 * Create a selection item corresponding to a constructor.
+	 * This method is used to specify a constructor that will be
+	 * applied to the results of the query execution. If the
+	 * constructor is for an entity class, the resulting entities
+	 * will be in the new state after the query is executed.
 	 *
-	 * @param result class whose instance is to be constructed
+	 * @param resultClass class whose instance is to be constructed
 	 * @param selections arguments to the constructor
 	 *
 	 * @return compound selection item
 	 *
-	 * @throws IllegalArgumentException if an argument is a tuple- or
-	 *                                  array-valued selection item
+	 * @throws IllegalArgumentException if an argument is a
+	 * tuple- or array-valued selection item
 	 */
-	<Y> CompoundSelection<Y> construct(Class<Y> result, Selection<?>... selections);
+	<Y> CompoundSelection<Y> construct(Class<Y> resultClass, Selection<?>... selections);
 
 	/**
-	 * Define a tuple-valued selection item
+	 * Create a tuple-valued selection item.
 	 *
 	 * @param selections selection items
 	 *
 	 * @return tuple-valued compound selection
 	 *
-	 * @throws IllegalArgumentException if an argument is a tuple- or
-	 *                                  array-valued selection item
+	 * @throws IllegalArgumentException if an argument is a
+	 * tuple- or array-valued selection item
 	 */
 	CompoundSelection<Tuple> tuple(Selection<?>... selections);
 
 	/**
-	 * Define a array-valued selection item
+	 * Create an array-valued selection item.
 	 *
 	 * @param selections selection items
 	 *
 	 * @return array-valued compound selection
 	 *
-	 * @throws IllegalArgumentException if an argument is a tuple- or
-	 *                                  array-valued selection item
+	 * @throws IllegalArgumentException if an argument is a
+	 * tuple- or array-valued selection item
 	 */
 	CompoundSelection<Object[]> array(Selection<?>... selections);
 
@@ -106,7 +115,7 @@ public interface QueryBuilder {
 	//aggregate functions:
 
 	/**
-	 * Create an expression applying the avg operation.
+	 * Create an aggregate expression applying the avg operation.
 	 *
 	 * @param x expression representing input value to avg operation
 	 *
@@ -115,7 +124,7 @@ public interface QueryBuilder {
 	<N extends Number> Expression<Double> avg(Expression<N> x);
 
 	/**
-	 * Create an expression applying the sum operation.
+	 * Create an aggregate expression applying the sum operation.
 	 *
 	 * @param x expression representing input value to sum operation
 	 *
@@ -124,7 +133,28 @@ public interface QueryBuilder {
 	<N extends Number> Expression<N> sum(Expression<N> x);
 
 	/**
-	 * Create an expression applying the numerical max operation.
+	 * Create an aggregate expression applying the sum operation to an
+	 * Integer-valued expression, returning a Long result.
+	 *
+	 * @param x expression representing input value to sum operation
+	 *
+	 * @return sum expression
+	 */
+	Expression<Long> sumAsLong(Expression<Integer> x);
+
+	/**
+	 * Create an aggregate expression applying the sum operation to a
+	 * Float-valued expression, returning a Double result.
+	 *
+	 * @param x expression representing input value to sum operation
+	 *
+	 * @return sum expression
+	 */
+	Expression<Double> sumAsDouble(Expression<Float> x);
+
+	/**
+	 * Create an aggregate expression applying the numerical max
+	 * operation.
 	 *
 	 * @param x expression representing input value to max operation
 	 *
@@ -133,7 +163,8 @@ public interface QueryBuilder {
 	<N extends Number> Expression<N> max(Expression<N> x);
 
 	/**
-	 * Create an expression applying the numerical min operation.
+	 * Create an aggregate expression applying the numerical min
+	 * operation.
 	 *
 	 * @param x expression representing input value to min operation
 	 *
@@ -150,7 +181,7 @@ public interface QueryBuilder {
 	 *
 	 * @return greatest expression
 	 */
-	<X extends Comparable<X>> Expression<X> greatest(Expression<X> x);
+	<X extends Comparable<? super X>> Expression<X> greatest(Expression<X> x);
 
 	/**
 	 * Create an aggregate expression for finding the least of
@@ -161,10 +192,10 @@ public interface QueryBuilder {
 	 *
 	 * @return least expression
 	 */
-	<X extends Comparable<X>> Expression<X> least(Expression<X> x);
+	<X extends Comparable<? super X>> Expression<X> least(Expression<X> x);
 
 	/**
-	 * Create an expression applying the count operation.
+	 * Create an aggregate expression applying the count operation.
 	 *
 	 * @param x expression representing input value to count
 	 * operation
@@ -174,7 +205,8 @@ public interface QueryBuilder {
 	Expression<Long> count(Expression<?> x);
 
 	/**
-	 * Create an expression applying the count distinct operation.
+	 * Create an aggregate expression applying the count distinct
+	 * operation.
 	 *
 	 * @param x expression representing input value to
 	 * count distinct operation
@@ -196,30 +228,29 @@ public interface QueryBuilder {
 	Predicate exists(Subquery<?> subquery);
 
 	/**
-	 * Create a predicate corresponding to an all expression over the
-	 * subquery results.
+	 * Create an all expression over the subquery results.
 	 *
-	 * @param subquery
+	 * @param subquery subquery
 	 *
 	 * @return all expression
 	 */
 	<Y> Expression<Y> all(Subquery<Y> subquery);
 
 	/**
-	 * Create a predicate corresponding to a some expression over the
-	 * subquery results.  This is equivalent to an any expression.
+	 * Create a some expression over the subquery results.
+	 * This expression is equivalent to an <code>any</code> expression.
 	 *
-	 * @param subquery
+	 * @param subquery subquery
 	 *
-	 * @return all expression
+	 * @return some expression
 	 */
 	<Y> Expression<Y> some(Subquery<Y> subquery);
 
 	/**
-	 * Create a predicate corresponding to an any expression over the
-	 * subquery results.  This is equivalent to a some expression.
+	 * Create an any expression over the subquery results.
+	 * This expression is equivalent to a <code>some</code> expression.
 	 *
-	 * @param subquery
+	 * @param subquery subquery
 	 *
 	 * @return any expression
 	 */
@@ -259,7 +290,7 @@ public interface QueryBuilder {
 	Predicate or(Expression<Boolean> x, Expression<Boolean> y);
 
 	/**
-	 * Create a conjunction of the given restriction predicates.
+	 * Create a disjunction of the given restriction predicates.
 	 * A disjunction of zero predicates is false.
 	 *
 	 * @param restrictions zero or more restriction predicates
@@ -300,7 +331,7 @@ public interface QueryBuilder {
 	/**
 	 * Create a predicate testing for a true value.
 	 *
-	 * @param x expression to be tested if true
+	 * @param x expression to be tested
 	 *
 	 * @return predicate
 	 */
@@ -309,7 +340,7 @@ public interface QueryBuilder {
 	/**
 	 * Create a predicate testing for a false value.
 	 *
-	 * @param x expression to be tested if false
+	 * @param x expression to be tested
 	 *
 	 * @return predicate
 	 */
@@ -323,7 +354,7 @@ public interface QueryBuilder {
 	 *
 	 * @param x expression
 	 *
-	 * @return predicate
+	 * @return is-null predicate
 	 */
 	Predicate isNull(Expression<?> x);
 
@@ -332,7 +363,7 @@ public interface QueryBuilder {
 	 *
 	 * @param x expression
 	 *
-	 * @return predicate
+	 * @return is-not-null predicate
 	 */
 	Predicate isNotNull(Expression<?> x);
 
@@ -349,16 +380,6 @@ public interface QueryBuilder {
 	Predicate equal(Expression<?> x, Expression<?> y);
 
 	/**
-	 * Create a predicate for testing the arguments for inequality.
-	 *
-	 * @param x expression
-	 * @param y expression
-	 *
-	 * @return inequality predicate
-	 */
-	Predicate notEqual(Expression<?> x, Expression<?> y);
-
-	/**
 	 * Create a predicate for testing the arguments for equality.
 	 *
 	 * @param x expression
@@ -367,6 +388,16 @@ public interface QueryBuilder {
 	 * @return equality predicate
 	 */
 	Predicate equal(Expression<?> x, Object y);
+
+	/**
+	 * Create a predicate for testing the arguments for inequality.
+	 *
+	 * @param x expression
+	 * @param y expression
+	 *
+	 * @return inequality predicate
+	 */
+	Predicate notEqual(Expression<?> x, Expression<?> y);
 
 	/**
 	 * Create a predicate for testing the arguments for inequality.
@@ -390,18 +421,18 @@ public interface QueryBuilder {
 	 *
 	 * @return greater-than predicate
 	 */
-	<Y extends Comparable<Y>> Predicate greaterThan(Expression<? extends Y> x, Expression<? extends Y> y);
+	<Y extends Comparable<? super Y>> Predicate greaterThan(Expression<? extends Y> x, Expression<? extends Y> y);
 
 	/**
 	 * Create a predicate for testing whether the first argument is
-	 * less than the second.
+	 * greater than the second.
 	 *
 	 * @param x expression
-	 * @param y expression
+	 * @param y value
 	 *
-	 * @return less-than predicate
+	 * @return greater-than predicate
 	 */
-	<Y extends Comparable<Y>> Predicate lessThan(Expression<? extends Y> x, Expression<? extends Y> y);
+	<Y extends Comparable<? super Y>> Predicate greaterThan(Expression<? extends Y> x, Y y);
 
 	/**
 	 * Create a predicate for testing whether the first argument is
@@ -412,7 +443,40 @@ public interface QueryBuilder {
 	 *
 	 * @return greater-than-or-equal predicate
 	 */
-	<Y extends Comparable<Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y);
+	<Y extends Comparable<? super Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y);
+
+	/**
+	 * Create a predicate for testing whether the first argument is
+	 * greater than or equal to the second.
+	 *
+	 * @param x expression
+	 * @param y value
+	 *
+	 * @return greater-than-or-equal predicate
+	 */
+	<Y extends Comparable<? super Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Y y);
+
+	/**
+	 * Create a predicate for testing whether the first argument is
+	 * less than the second.
+	 *
+	 * @param x expression
+	 * @param y expression
+	 *
+	 * @return less-than predicate
+	 */
+	<Y extends Comparable<? super Y>> Predicate lessThan(Expression<? extends Y> x, Expression<? extends Y> y);
+
+	/**
+	 * Create a predicate for testing whether the first argument is
+	 * less than the second.
+	 *
+	 * @param x expression
+	 * @param y value
+	 *
+	 * @return less-than predicate
+	 */
+	<Y extends Comparable<? super Y>> Predicate lessThan(Expression<? extends Y> x, Y y);
 
 	/**
 	 * Create a predicate for testing whether the first argument is
@@ -423,7 +487,18 @@ public interface QueryBuilder {
 	 *
 	 * @return less-than-or-equal predicate
 	 */
-	<Y extends Comparable<Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y);
+	<Y extends Comparable<? super Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Expression<? extends Y> y);
+
+	/**
+	 * Create a predicate for testing whether the first argument is
+	 * less than or equal to the second.
+	 *
+	 * @param x expression
+	 * @param y value
+	 *
+	 * @return less-than-or-equal predicate
+	 */
+	<Y extends Comparable<? super Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Y y);
 
 	/**
 	 * Create a predicate for testing whether the first argument is
@@ -435,51 +510,7 @@ public interface QueryBuilder {
 	 *
 	 * @return between predicate
 	 */
-	<Y extends Comparable<Y>> Predicate between(Expression<? extends Y> v, Expression<? extends Y> x, Expression<? extends Y> y);
-
-	/**
-	 * Create a predicate for testing whether the first argument is
-	 * greater than the second.
-	 *
-	 * @param x expression
-	 * @param y value
-	 *
-	 * @return greater-than predicate
-	 */
-	<Y extends Comparable<Y>> Predicate greaterThan(Expression<? extends Y> x, Y y);
-
-	/**
-	 * Create a predicate for testing whether the first argument is
-	 * less than the second.
-	 *
-	 * @param x expression
-	 * @param y value
-	 *
-	 * @return less-than predicate
-	 */
-	<Y extends Comparable<Y>> Predicate lessThan(Expression<? extends Y> x, Y y);
-
-	/**
-	 * Create a predicate for testing whether the first argument is
-	 * greater than or equal to the second.
-	 *
-	 * @param x expression
-	 * @param y value
-	 *
-	 * @return greater-than-or-equal predicate
-	 */
-	<Y extends Comparable<Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> x, Y y);
-
-	/**
-	 * Create a predicate for testing whether the first argument is
-	 * less than or equal to the second.
-	 *
-	 * @param x expression
-	 * @param y value
-	 *
-	 * @return less-than-or-equal predicate
-	 */
-	<Y extends Comparable<Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> x, Y y);
+	<Y extends Comparable<? super Y>> Predicate between(Expression<? extends Y> v, Expression<? extends Y> x, Expression<? extends Y> y);
 
 	/**
 	 * Create a predicate for testing whether the first argument is
@@ -491,7 +522,7 @@ public interface QueryBuilder {
 	 *
 	 * @return between predicate
 	 */
-	<Y extends Comparable<Y>> Predicate between(Expression<? extends Y> v, Y x, Y y);
+	<Y extends Comparable<? super Y>> Predicate between(Expression<? extends Y> v, Y x, Y y);
 
 
 	//comparisons for numeric operands:
@@ -509,14 +540,14 @@ public interface QueryBuilder {
 
 	/**
 	 * Create a predicate for testing whether the first argument is
-	 * less than the second.
+	 * greater than the second.
 	 *
 	 * @param x expression
-	 * @param y expression
+	 * @param y value
 	 *
-	 * @return less-than predicate
+	 * @return greater-than predicate
 	 */
-	Predicate lt(Expression<? extends Number> x, Expression<? extends Number> y);
+	Predicate gt(Expression<? extends Number> x, Number y);
 
 	/**
 	 * Create a predicate for testing whether the first argument is
@@ -531,25 +562,25 @@ public interface QueryBuilder {
 
 	/**
 	 * Create a predicate for testing whether the first argument is
-	 * less than or equal to the second.
-	 *
-	 * @param x expression
-	 * @param y expression
-	 *
-	 * @return less-than-or-equal predicate
-	 */
-	Predicate le(Expression<? extends Number> x, Expression<? extends Number> y);
-
-	/**
-	 * Create a predicate for testing whether the first argument is
-	 * greater than the second.
+	 * greater than or equal to the second.
 	 *
 	 * @param x expression
 	 * @param y value
 	 *
-	 * @return greater-than predicate
+	 * @return greater-than-or-equal predicate
 	 */
-	Predicate gt(Expression<? extends Number> x, Number y);
+	Predicate ge(Expression<? extends Number> x, Number y);
+
+	/**
+	 * Create a predicate for testing whether the first argument is
+	 * less than the second.
+	 *
+	 * @param x expression
+	 * @param y expression
+	 *
+	 * @return less-than predicate
+	 */
+	Predicate lt(Expression<? extends Number> x, Expression<? extends Number> y);
 
 	/**
 	 * Create a predicate for testing whether the first argument is
@@ -564,14 +595,14 @@ public interface QueryBuilder {
 
 	/**
 	 * Create a predicate for testing whether the first argument is
-	 * greater than or equal to the second.
+	 * less than or equal to the second.
 	 *
 	 * @param x expression
-	 * @param y value
+	 * @param y expression
 	 *
-	 * @return greater-than-or-equal predicate
+	 * @return less-than-or-equal predicate
 	 */
-	Predicate ge(Expression<? extends Number> x, Number y);
+	Predicate le(Expression<? extends Number> x, Expression<? extends Number> y);
 
 	/**
 	 * Create a predicate for testing whether the first argument is
@@ -619,28 +650,6 @@ public interface QueryBuilder {
 	<N extends Number> Expression<N> sum(Expression<? extends N> x, Expression<? extends N> y);
 
 	/**
-	 * Create an expression that returns the product
-	 * of its arguments.
-	 *
-	 * @param x expression
-	 * @param y expression
-	 *
-	 * @return product
-	 */
-	<N extends Number> Expression<N> prod(Expression<? extends N> x, Expression<? extends N> y);
-
-	/**
-	 * Create an expression that returns the difference
-	 * between its arguments.
-	 *
-	 * @param x expression
-	 * @param y expression
-	 *
-	 * @return difference
-	 */
-	<N extends Number> Expression<N> diff(Expression<? extends N> x, Expression<? extends N> y);
-
-	/**
 	 * Create an expression that returns the sum
 	 * of its arguments.
 	 *
@@ -650,28 +659,6 @@ public interface QueryBuilder {
 	 * @return sum
 	 */
 	<N extends Number> Expression<N> sum(Expression<? extends N> x, N y);
-
-	/**
-	 * Create an expression that returns the product
-	 * of its arguments.
-	 *
-	 * @param x expression
-	 * @param y value
-	 *
-	 * @return product
-	 */
-	<N extends Number> Expression<N> prod(Expression<? extends N> x, N y);
-
-	/**
-	 * Create an expression that returns the difference
-	 * between its arguments.
-	 *
-	 * @param x expression
-	 * @param y value
-	 *
-	 * @return difference
-	 */
-	<N extends Number> Expression<N> diff(Expression<? extends N> x, N y);
 
 	/**
 	 * Create an expression that returns the sum
@@ -688,12 +675,56 @@ public interface QueryBuilder {
 	 * Create an expression that returns the product
 	 * of its arguments.
 	 *
+	 * @param x expression
+	 * @param y expression
+	 *
+	 * @return product
+	 */
+	<N extends Number> Expression<N> prod(Expression<? extends N> x, Expression<? extends N> y);
+
+	/**
+	 * Create an expression that returns the product
+	 * of its arguments.
+	 *
+	 * @param x expression
+	 * @param y value
+	 *
+	 * @return product
+	 */
+	<N extends Number> Expression<N> prod(Expression<? extends N> x, N y);
+
+	/**
+	 * Create an expression that returns the product
+	 * of its arguments.
+	 *
 	 * @param x value
 	 * @param y expression
 	 *
 	 * @return product
 	 */
 	<N extends Number> Expression<N> prod(N x, Expression<? extends N> y);
+
+	/**
+	 * Create an expression that returns the difference
+	 * between its arguments.
+	 *
+	 * @param x expression
+	 * @param y expression
+	 *
+	 * @return difference
+	 */
+	<N extends Number> Expression<N> diff(Expression<? extends N> x, Expression<? extends N> y);
+
+	/**
+	 * Create an expression that returns the difference
+	 * between its arguments.
+	 *
+	 * @param x expression
+	 * @param y value
+	 *
+	 * @return difference
+	 */
+	<N extends Number> Expression<N> diff(Expression<? extends N> x, N y);
 
 	/**
 	 * Create an expression that returns the difference
@@ -786,65 +817,65 @@ public interface QueryBuilder {
 	//typecasts:
 
 	/**
-	 * Typecast.
+	 * Typecast.  Returns same expression object.
 	 *
 	 * @param number numeric expression
 	 *
-	 * @return Expression<Long>
+	 * @return Expression&#060;Long&#062;
 	 */
 	Expression<Long> toLong(Expression<? extends Number> number);
 
 	/**
-	 * Typecast.
+	 * Typecast.  Returns same expression object.
 	 *
 	 * @param number numeric expression
 	 *
-	 * @return Expression<Integer>
+	 * @return Expression&#060;Integer&#062;
 	 */
 	Expression<Integer> toInteger(Expression<? extends Number> number);
 
 	/**
-	 * Typecast.
+	 * Typecast. Returns same expression object.
 	 *
 	 * @param number numeric expression
 	 *
-	 * @return Expression<Float>
+	 * @return Expression&#060;Float&#062;
 	 */
 	Expression<Float> toFloat(Expression<? extends Number> number);
 
 	/**
-	 * Typecast.
+	 * Typecast.  Returns same expression object.
 	 *
 	 * @param number numeric expression
 	 *
-	 * @return Expression<Double>
+	 * @return Expression&#060;Double&#062;
 	 */
 	Expression<Double> toDouble(Expression<? extends Number> number);
 
 	/**
-	 * Typecast.
+	 * Typecast.  Returns same expression object.
 	 *
 	 * @param number numeric expression
 	 *
-	 * @return Expression<BigDecimal>
+	 * @return Expression&#060;BigDecimal&#062;
 	 */
 	Expression<BigDecimal> toBigDecimal(Expression<? extends Number> number);
 
 	/**
-	 * Typecast.
+	 * Typecast.  Returns same expression object.
 	 *
 	 * @param number numeric expression
 	 *
-	 * @return Expression<BigInteger>
+	 * @return Expression&#060;BigInteger&#062;
 	 */
 	Expression<BigInteger> toBigInteger(Expression<? extends Number> number);
 
 	/**
-	 * Typecast.
+	 * Typecast.  Returns same expression object.
 	 *
 	 * @param character expression
 	 *
-	 * @return Expression<String>
+	 * @return Expression&#060;String&#062;
 	 */
 	Expression<String> toString(Expression<Character> character);
 
@@ -852,14 +883,24 @@ public interface QueryBuilder {
 	//literals:
 
 	/**
-	 * Create an expression literal.
+	 * Create an expression for a literal.
 	 *
-	 * @param value
+	 * @param value value represented by the expression
 	 *
 	 * @return expression literal
+	 *
+	 * @throws IllegalArgumentException if value is null
 	 */
 	<T> Expression<T> literal(T value);
 
+	/**
+	 * Create an expression for a null literal with the given type.
+	 *
+	 * @param resultClass type of the null literal
+	 *
+	 * @return null expression literal
+	 */
+	<T> Expression<T> nullLiteral(Class<T> resultClass);
 
 	//parameters:
 
@@ -876,11 +917,13 @@ public interface QueryBuilder {
 	 * Create a parameter expression with the given name.
 	 *
 	 * @param paramClass parameter class
-	 * @param name
+	 * @param name name that can be used to refer to
+	 * the parameter
 	 *
 	 * @return parameter expression
 	 */
 	<T> ParameterExpression<T> parameter(Class<T> paramClass, String name);
+
 
 	//collection operations:
 
@@ -889,7 +932,7 @@ public interface QueryBuilder {
 	 *
 	 * @param collection expression
 	 *
-	 * @return predicate
+	 * @return is-empty predicate
 	 */
 	<C extends Collection<?>> Predicate isEmpty(Expression<C> collection);
 
@@ -899,18 +942,9 @@ public interface QueryBuilder {
 	 *
 	 * @param collection expression
 	 *
-	 * @return predicate
+	 * @return is-not-empty predicate
 	 */
 	<C extends Collection<?>> Predicate isNotEmpty(Expression<C> collection);
-
-	/**
-	 * Create an expression that tests the size of a collection.
-	 *
-	 * @param collection
-	 *
-	 * @return size expression
-	 */
-	<C extends Collection<?>> Expression<Integer> size(C collection);
 
 	/**
 	 * Create an expression that tests the size of a collection.
@@ -922,48 +956,61 @@ public interface QueryBuilder {
 	<C extends java.util.Collection<?>> Expression<Integer> size(Expression<C> collection);
 
 	/**
+	 * Create an expression that tests the size of a collection.
+	 *
+	 * @param collection collection
+	 *
+	 * @return size expression
+	 */
+	<C extends Collection<?>> Expression<Integer> size(C collection);
+
+	/**
 	 * Create a predicate that tests whether an element is
 	 * a member of a collection.
+	 * If the collection is empty, the predicate will be false.
+	 *
+	 * @param elem element expression
+	 * @param collection expression
+	 *
+	 * @return is-member predicate
+	 */
+	<E, C extends Collection<E>> Predicate isMember(Expression<E> elem, Expression<C> collection);
+
+	/**
+	 * Create a predicate that tests whether an element is
+	 * a member of a collection.
+	 * If the collection is empty, the predicate will be false.
 	 *
 	 * @param elem element
 	 * @param collection expression
 	 *
-	 * @return predicate
+	 * @return is-member predicate
 	 */
 	<E, C extends Collection<E>> Predicate isMember(E elem, Expression<C> collection);
 
 	/**
 	 * Create a predicate that tests whether an element is
 	 * not a member of a collection.
-	 *
-	 * @param elem element
-	 * @param collection expression
-	 *
-	 * @return predicate
-	 */
-	<E, C extends Collection<E>> Predicate isNotMember(E elem, Expression<C> collection);
-
-	/**
-	 * Create a predicate that tests whether an element is
-	 * a member of a collection.
+	 * If the collection is empty, the predicate will be true.
 	 *
 	 * @param elem element expression
 	 * @param collection expression
 	 *
-	 * @return predicate
+	 * @return is-not-member predicate
 	 */
-	<E, C extends Collection<E>> Predicate isMember(Expression<E> elem, Expression<C> collection);
+	<E, C extends Collection<E>> Predicate isNotMember(Expression<E> elem, Expression<C> collection);
 
 	/**
 	 * Create a predicate that tests whether an element is
 	 * not a member of a collection.
+	 * If the collection is empty, the predicate will be true.
 	 *
-	 * @param elem element expression
+	 * @param elem element
 	 * @param collection expression
 	 *
-	 * @return predicate
+	 * @return is-not-member predicate
 	 */
-	<E, C extends Collection<E>> Predicate isNotMember(Expression<E> elem, Expression<C> collection);
+	<E, C extends Collection<E>> Predicate isNotMember(E elem, Expression<C> collection);
 
 
 	//get the values and keys collections of the Map, which may then
@@ -972,7 +1019,7 @@ public interface QueryBuilder {
 	/**
 	 * Create an expression that returns the values of a map.
 	 *
-	 * @param map
+	 * @param map map
 	 *
 	 * @return collection expression
 	 */
@@ -981,7 +1028,7 @@ public interface QueryBuilder {
 	/**
 	 * Create an expression that returns the keys of a map.
 	 *
-	 * @param map
+	 * @param map map
 	 *
 	 * @return set expression
 	 */
@@ -1006,6 +1053,17 @@ public interface QueryBuilder {
 	 * satisfies the given pattern.
 	 *
 	 * @param x string expression
+	 * @param pattern string
+	 *
+	 * @return like predicate
+	 */
+	Predicate like(Expression<String> x, String pattern);
+
+	/**
+	 * Create a predicate for testing whether the expression
+	 * satisfies the given pattern.
+	 *
+	 * @param x string expression
 	 * @param pattern string expression
 	 * @param escapeChar escape character expression
 	 *
@@ -1024,17 +1082,6 @@ public interface QueryBuilder {
 	 * @return like predicate
 	 */
 	Predicate like(Expression<String> x, Expression<String> pattern, char escapeChar);
-
-	/**
-	 * Create a predicate for testing whether the expression
-	 * satisfies the given pattern.
-	 *
-	 * @param x string expression
-	 * @param pattern string
-	 *
-	 * @return like predicate
-	 */
-	Predicate like(Expression<String> x, String pattern);
 
 	/**
 	 * Create a predicate for testing whether the expression
@@ -1067,9 +1114,20 @@ public interface QueryBuilder {
 	 * @param x string expression
 	 * @param pattern string expression
 	 *
-	 * @return like predicate
+	 * @return not-like predicate
 	 */
 	Predicate notLike(Expression<String> x, Expression<String> pattern);
+
+	/**
+	 * Create a predicate for testing whether the expression
+	 * does not satisfy the given pattern.
+	 *
+	 * @param x string expression
+	 * @param pattern string
+	 *
+	 * @return not-like predicate
+	 */
+	Predicate notLike(Expression<String> x, String pattern);
 
 	/**
 	 * Create a predicate for testing whether the expression
@@ -1079,7 +1137,7 @@ public interface QueryBuilder {
 	 * @param pattern string expression
 	 * @param escapeChar escape character expression
 	 *
-	 * @return like predicate
+	 * @return not-like predicate
 	 */
 	Predicate notLike(Expression<String> x, Expression<String> pattern, Expression<Character> escapeChar);
 
@@ -1091,7 +1149,7 @@ public interface QueryBuilder {
 	 * @param pattern string expression
 	 * @param escapeChar escape character
 	 *
-	 * @return like predicate
+	 * @return not-like predicate
 	 */
 	Predicate notLike(Expression<String> x, Expression<String> pattern, char escapeChar);
 
@@ -1101,20 +1159,9 @@ public interface QueryBuilder {
 	 *
 	 * @param x string expression
 	 * @param pattern string
-	 *
-	 * @return like predicate
-	 */
-	Predicate notLike(Expression<String> x, String pattern);
-
-	/**
-	 * Create a predicate for testing whether the expression
-	 * does not satisfy the given pattern.
-	 *
-	 * @param x string expression
-	 * @param pattern string
 	 * @param escapeChar escape character expression
 	 *
-	 * @return like predicate
+	 * @return not-like predicate
 	 */
 	Predicate notLike(Expression<String> x, String pattern, Expression<Character> escapeChar);
 
@@ -1126,12 +1173,12 @@ public interface QueryBuilder {
 	 * @param pattern string
 	 * @param escapeChar escape character
 	 *
-	 * @return like predicate
+	 * @return not-like predicate
 	 */
 	Predicate notLike(Expression<String> x, String pattern, char escapeChar);
 
 	/**
-	 * String concatenation operation.
+	 * Create an expression for string concatenation.
 	 *
 	 * @param x string expression
 	 * @param y string expression
@@ -1141,7 +1188,7 @@ public interface QueryBuilder {
 	Expression<String> concat(Expression<String> x, Expression<String> y);
 
 	/**
-	 * String concatenation operation.
+	 * Create an expression for string concatenation.
 	 *
 	 * @param x string expression
 	 * @param y string
@@ -1151,7 +1198,7 @@ public interface QueryBuilder {
 	Expression<String> concat(Expression<String> x, String y);
 
 	/**
-	 * String concatenation operation.
+	 * Create an expression for string concatenation.
 	 *
 	 * @param x string
 	 * @param y string expression
@@ -1161,9 +1208,9 @@ public interface QueryBuilder {
 	Expression<String> concat(String x, Expression<String> y);
 
 	/**
-	 * Substring extraction operation.
-	 * Extracts a substring starting at specified position through
-	 * to end of the string.
+	 * Create an expression for substring extraction.
+	 * Extracts a substring starting at the specified position
+	 * through to end of the string.
 	 * First position is 1.
 	 *
 	 * @param x string expression
@@ -1174,9 +1221,9 @@ public interface QueryBuilder {
 	Expression<String> substring(Expression<String> x, Expression<Integer> from);
 
 	/**
-	 * Substring extraction operation.
-	 * Extracts a substring starting at specified position through
-	 * to end of the string.
+	 * Create an expression for substring extraction.
+	 * Extracts a substring starting at the specified position
+	 * through to end of the string.
 	 * First position is 1.
 	 *
 	 * @param x string expression
@@ -1187,8 +1234,8 @@ public interface QueryBuilder {
 	Expression<String> substring(Expression<String> x, int from);
 
 	/**
-	 * Substring extraction operation.
-	 * Extracts a substring of given length starting at
+	 * Create an expression for substring extraction.
+	 * Extracts a substring of given length starting at the
 	 * specified position.
 	 * First position is 1.
 	 *
@@ -1201,8 +1248,8 @@ public interface QueryBuilder {
 	Expression<String> substring(Expression<String> x, Expression<Integer> from, Expression<Integer> len);
 
 	/**
-	 * Substring extraction operation.
-	 * Extracts a substring of given length starting at
+	 * Create an expression for substring extraction.
+	 * Extracts a substring of given length starting at the
 	 * specified position.
 	 * First position is 1.
 	 *
@@ -1214,8 +1261,25 @@ public interface QueryBuilder {
 	 */
 	Expression<String> substring(Expression<String> x, int from, int len);
 
+	/**
+	 * Used to specify how strings are trimmed.
+	 */
 	public static enum Trimspec {
-		LEADING, TRAILING, BOTH
+
+		/**
+		 * Trim from leading end.
+		 */
+		LEADING,
+
+		/**
+		 * Trim from trailing end.
+		 */
+		TRAILING,
+
+		/**
+		 * Trim from both ends.
+		 */
+		BOTH
 	}
 
 	/**
@@ -1332,12 +1396,11 @@ public interface QueryBuilder {
 	 * string to be located is not found, 0 is returned.
 	 *
 	 * @param x expression for string to be searched
-	 * @param pattern expression for string to be located
-	 * @param from expression for position at which to start search
+	 * @param pattern string to be located
 	 *
 	 * @return expression corresponding to position
 	 */
-	Expression<Integer> locate(Expression<String> x, Expression<String> pattern, Expression<Integer> from);
+	Expression<Integer> locate(Expression<String> x, String pattern);
 
 	/**
 	 * Create expression to locate the position of one string
@@ -1347,11 +1410,12 @@ public interface QueryBuilder {
 	 * string to be located is not found, 0 is returned.
 	 *
 	 * @param x expression for string to be searched
-	 * @param pattern string to be located
+	 * @param pattern expression for string to be located
+	 * @param from expression for position at which to start search
 	 *
 	 * @return expression corresponding to position
 	 */
-	Expression<Integer> locate(Expression<String> x, String pattern);
+	Expression<Integer> locate(Expression<String> x, Expression<String> pattern, Expression<Integer> from);
 
 	/**
 	 * Create expression to locate the position of one string
@@ -1396,12 +1460,12 @@ public interface QueryBuilder {
 	//in builders:
 
 	/**
-	 * Interface used to build in-expressions.
+	 * Interface used to build in predicates.
 	 */
 	public static interface In<T> extends Predicate {
 
 		/**
-		 * Returns the expression to be tested against the
+		 * Return the expression to be tested against the
 		 * list of values.
 		 *
 		 * @return expression
@@ -1411,7 +1475,7 @@ public interface QueryBuilder {
 		/**
 		 * Add to list of values to be tested against.
 		 *
-		 * @param value
+		 * @param value value
 		 *
 		 * @return in predicate
 		 */
@@ -1438,7 +1502,7 @@ public interface QueryBuilder {
 	<T> In<T> in(Expression<? extends T> expression);
 
 
-	//coalesce, nullif:
+	// coalesce, nullif:
 
 	/**
 	 * Create an expression that returns null if all its arguments
@@ -1448,8 +1512,7 @@ public interface QueryBuilder {
 	 * @param x expression
 	 * @param y expression
 	 *
-	 * @return expression corresponding to the given coalesce
-	 *         expression
+	 * @return coalesce expression
 	 */
 	<Y> Expression<Y> coalesce(Expression<? extends Y> x, Expression<? extends Y> y);
 
@@ -1473,11 +1536,9 @@ public interface QueryBuilder {
 	 * @param x expression
 	 * @param y expression
 	 *
-	 * @return expression corresponding to the given nullif
-	 *         expression
+	 * @return nullif expression
 	 */
 	<Y> Expression<Y> nullif(Expression<Y> x, Expression<?> y);
-
 
 	/**
 	 * Create an expression that tests whether its argument are
@@ -1487,8 +1548,7 @@ public interface QueryBuilder {
 	 * @param x expression
 	 * @param y value
 	 *
-	 * @return expression corresponding to the given nullif
-	 *         expression
+	 * @return nullif expression
 	 */
 	<Y> Expression<Y> nullif(Expression<Y> x, Y y);
 
@@ -1497,6 +1557,7 @@ public interface QueryBuilder {
 
 	/**
 	 * Interface used to build coalesce expressions.
+	 *
 	 * A coalesce expression is equivalent to a case expression
 	 * that returns null if all its arguments evaluate to null,
 	 * and the value of its first non-null argument otherwise.
@@ -1506,7 +1567,7 @@ public interface QueryBuilder {
 		/**
 		 * Add an argument to the coalesce expression.
 		 *
-		 * @param value
+		 * @param value value
 		 *
 		 * @return coalesce expression
 		 */
@@ -1534,11 +1595,13 @@ public interface QueryBuilder {
 
 	/**
 	 * Interface used to build simple case expressions.
+	 * Case conditions are evaluated in the order in which
+	 * they are specified.
 	 */
 	public static interface SimpleCase<C, R> extends Expression<R> {
 
 		/**
-		 * Returns the expression to be tested against the
+		 * Return the expression to be tested against the
 		 * conditions.
 		 *
 		 * @return expression
@@ -1585,7 +1648,7 @@ public interface QueryBuilder {
 	}
 
 	/**
-	 * Create simple case expression.
+	 * Create a simple case expression.
 	 *
 	 * @param expression to be tested against the case conditions
 	 *
@@ -1596,6 +1659,8 @@ public interface QueryBuilder {
 
 	/**
 	 * Interface used to build general case expressions.
+	 * Case conditions are evaluated in the order in which
+	 * they are specified.
 	 */
 	public static interface Case<R> extends Expression<R> {
 
@@ -1646,7 +1711,7 @@ public interface QueryBuilder {
 	<R> Case<R> selectCase();
 
 	/**
-	 * Create an expression for execution of a database
+	 * Create an expression for the execution of a database
 	 * function.
 	 *
 	 * @param name function name
@@ -1655,7 +1720,6 @@ public interface QueryBuilder {
 	 *
 	 * @return expression
 	 */
-	<T> Expression<T> function(String name, Class<T> type,
-							   Expression<?>... args);
+	<T> Expression<T> function(String name, Class<T> type, Expression<?>... args);
 
 }

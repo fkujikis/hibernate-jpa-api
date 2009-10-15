@@ -1,0 +1,39 @@
+usePlugin('java')
+
+configurations {
+    mavenDeployers
+}
+
+dependencies {
+    mavenDeployers 'org.apache.maven.wagon:wagon-webdav:1.0-beta-2'
+}
+
+group = 'org.hibernate.java-persistence'
+version = '2.0-cr-1'
+
+// gradle uses 'build/' by default
+buildDirName = "target"
+
+manifest.mainAttributes(
+        provider: 'gradle',
+        'Built-By': 'Hibernate.org',
+        'Specification-Title': 'Java Persistence API, Version 2.0',
+        'Specification-Version': '2.0',
+        'Specification-Vendor': 'Sun Microsystems, Inc.',
+        'Implementation-Version': version,
+        'Implementation-Vendor': 'hibernate.org',
+        'Implementation-Title': 'Java Persistence API'
+)
+
+if ( !hasProperty('jbossReleaseRepositoryRoot') ) {
+    jbossReleaseRepositoryRoot = '/tmp'
+}
+uploadArchives {
+    repositories {
+        deployer = mavenDeployer {
+            configuration = configurations.mavenDeployers
+            repository(url: "file://${jbossReleaseRepositoryRoot}")
+            snapshotRepository(url: "dav:https://snapshots.jboss.org/maven2")
+        }
+    }
+}

@@ -14,9 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.PersistenceException;
@@ -29,23 +26,26 @@ import javax.persistence.PersistenceException;
  * Implementations must be thread-safe.
  */
 public class PersistenceProviderResolverHolder {
+	private static final PersistenceProviderResolver DEFAULT_RESOLVER = new PersistenceProviderResolverPerClassLoader();
 
-	private static volatile PersistenceProviderResolver resolver;
-
-	private static final PersistenceProviderResolver defaultResolver = new PersistenceProviderResolverPerClassLoader();
+	private static volatile PersistenceProviderResolver RESOLVER;
 
 	/**
 	 * Returns the current persistence provider resolver
+	 *
+	 * @return persistence provider resolver in use
 	 */
 	public static PersistenceProviderResolver getPersistenceProviderResolver() {
-		return resolver == null ? defaultResolver : resolver;
+		return RESOLVER == null ? DEFAULT_RESOLVER : RESOLVER;
 	}
 
 	/**
-	 * Defines the persistence provider resolver used
+	 * Defines the persistence provider resolver used.
+	 *
+	 * @param resolver PersistenceProviderResolver to be used.
 	 */
 	public static void setPersistenceProviderResolver(PersistenceProviderResolver resolver) {
-		PersistenceProviderResolverHolder.resolver = resolver;
+		RESOLVER = resolver;
 	}
 
 	/**
@@ -61,21 +61,41 @@ public class PersistenceProviderResolverHolder {
 		private final WeakHashMap<ClassLoader, PersistenceProviderResolver> resolvers =
 				new WeakHashMap<ClassLoader, PersistenceProviderResolver>();
 		private volatile short barrier = 1;
-		
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public List<PersistenceProvider> getPersistenceProviders() {
-			ClassLoader cl = Thread.currentThread().getContextClassLoader();
-			if ( cl == null ) {
-				cl = PersistenceProviderResolverPerClassLoader.class.getClassLoader();
-			}
-			if (barrier == 1) {} //read barrier syncs state with other threads
+			ClassLoader cl = getContextualClassLoader();
+			if ( barrier == 1 ) {} //read barrier syncs state with other threads
 			PersistenceProviderResolver currentResolver = resolvers.get( cl );
-			if (currentResolver == null) {
-				currentResolver = new CachingPersistenceProviderResolver(cl);
+			if ( currentResolver == null ) {
+				currentResolver = new CachingPersistenceProviderResolver( cl );
 				resolvers.put( cl, currentResolver );
 				barrier = 1;
 			}
 			return currentResolver.getPersistenceProviders();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void clearCachedProviders() {
+			// todo : should we clear all providers from all resolvers here?
+			ClassLoader cl = getContextualClassLoader();
+			if ( barrier == 1 ) {} //read barrier syncs state with other threads
+			PersistenceProviderResolver currentResolver = resolvers.get( cl );
+			if ( currentResolver != null ) {
+				currentResolver.clearCachedProviders();
+			}
+		}
+
+		private static ClassLoader getContextualClassLoader() {
+			ClassLoader cl = Thread.currentThread().getContextClassLoader();
+			if ( cl == null ) {
+				cl = PersistenceProviderResolverPerClassLoader.class.getClassLoader();
+			}
+			return cl;
 		}
 
 		/**
@@ -88,64 +108,86 @@ public class PersistenceProviderResolverHolder {
 		 */
 		private static class CachingPersistenceProviderResolver implements PersistenceProviderResolver {
 			//this assumes that the class loader keeps the list of classes loaded
-			private final List<WeakReference<Class<? extends PersistenceProvider>>> resolverClasses;
+			private final List<WeakReference<Class<? extends PersistenceProvider>>> resolverClasses
+					= new ArrayList<WeakReference<Class<? extends PersistenceProvider>>>();
 
 			public CachingPersistenceProviderResolver(ClassLoader cl) {
-				resolverClasses = new ArrayList<WeakReference<Class<? extends PersistenceProvider>>>();
-				try {
-					Enumeration<URL> resources = cl.getResources( "META-INF/services/" + PersistenceProvider.class.getName() );
-					Set<String> names = new HashSet<String>();
-					while ( resources.hasMoreElements() ) {
-						URL url = resources.nextElement();
-						InputStream is = url.openStream();
-						try {
-							names.addAll( providerNamesFromReader( new BufferedReader( new InputStreamReader( is ) ) ) );
+				loadResolverClasses( cl );
+			}
+
+			private void loadResolverClasses(ClassLoader cl) {
+				synchronized ( resolverClasses ) {
+					try {
+						Enumeration<URL> resources = cl.getResources( "META-INF/services/" + PersistenceProvider.class.getName() );
+						Set<String> names = new HashSet<String>();
+						while ( resources.hasMoreElements() ) {
+							URL url = resources.nextElement();
+							InputStream is = url.openStream();
+							try {
+								names.addAll( providerNamesFromReader( new BufferedReader( new InputStreamReader( is ) ) ) );
+							}
+							finally {
+								is.close();
+							}
 						}
-						finally {
-							is.close();
+						for ( String s : names ) {
+							@SuppressWarnings( "unchecked" )
+							Class<? extends PersistenceProvider> providerClass = (Class<? extends PersistenceProvider>) cl.loadClass( s );
+							WeakReference<Class<? extends PersistenceProvider>> reference
+									= new WeakReference<Class<? extends PersistenceProvider>>(providerClass);
+							//keep Hibernate atop
+							if ( s.endsWith( "HibernatePersistence" ) && resolverClasses.size() > 0 ) {
+								WeakReference<Class<? extends PersistenceProvider>> movedReference = resolverClasses.get( 0 );
+								resolverClasses.add( 0, reference );
+								resolverClasses.add( movedReference );
+							}
+							else {
+								resolverClasses.add( reference );
+							}
 						}
 					}
-					for ( String s : names ) {
-						@SuppressWarnings( "unchecked" )
-						Class<? extends PersistenceProvider> providerClass = (Class<? extends PersistenceProvider>) cl.loadClass( s );
-						WeakReference<Class<? extends PersistenceProvider>> reference
-								= new WeakReference<Class<? extends PersistenceProvider>>(providerClass);
-						//keep Hibernate atop
-						if ( s.endsWith( "HibernatePersistence" ) && resolverClasses.size() > 0 ) {
-							WeakReference<Class<? extends PersistenceProvider>> movedReference = resolverClasses.get( 0 );
-							resolverClasses.add( 0, reference );
-							resolverClasses.add( movedReference );
-						}
-						else {
-							resolverClasses.add( reference );
-						}
+					catch ( IOException e ) {
+						throw new PersistenceException( e );
 					}
-				}
-				catch ( IOException e ) {
-					throw new PersistenceException( e );
-				}
-				catch ( ClassNotFoundException e ) {
-					throw new PersistenceException( e );
+					catch ( ClassNotFoundException e ) {
+						throw new PersistenceException( e );
+					}
 				}
 			}
 
-			//TODO find a way to cache property instances
-			//problem #1: avoid hard ref with classloader (List<WR<PP>>?
-			//problem #2: avoid half GC lists
+			/**
+			 * {@inheritDoc}
+			 */
 			public List<PersistenceProvider> getPersistenceProviders() {
-				List<PersistenceProvider> providers = new ArrayList<PersistenceProvider>( resolverClasses.size() );
-				try {
-					for ( WeakReference<Class<? extends PersistenceProvider>> providerClass : resolverClasses ) {
-						providers.add( providerClass.get().newInstance() );
+				//TODO find a way to cache property instances
+				//problem #1: avoid hard ref with classloader (List<WR<PP>>?
+				//problem #2: avoid half GC lists
+				// todo (steve) : why arent we just caching the PersistenceProvider *instances* as the CachingPersistenceProviderResolver state???
+				synchronized ( resolverClasses ) {
+					List<PersistenceProvider> providers = new ArrayList<PersistenceProvider>( resolverClasses.size() );
+					try {
+						for ( WeakReference<Class<? extends PersistenceProvider>> providerClass : resolverClasses ) {
+							providers.add( providerClass.get().newInstance() );
+						}
 					}
+					catch ( InstantiationException e ) {
+						throw new PersistenceException( e );
+					}
+					catch ( IllegalAccessException e ) {
+						throw new PersistenceException( e );
+					}
+					return providers;
 				}
-				catch ( InstantiationException e ) {
-					throw new PersistenceException( e );
+			}
+
+			/**
+			 * {@inheritDoc}
+			 */
+			public synchronized void clearCachedProviders() {
+				synchronized ( resolverClasses ) {
+					resolverClasses.clear();
+					loadResolverClasses( PersistenceProviderResolverPerClassLoader.getContextualClassLoader() );
 				}
-				catch ( IllegalAccessException e ) {
-					throw new PersistenceException( e );
-				}
-				return providers;
 			}
 
 

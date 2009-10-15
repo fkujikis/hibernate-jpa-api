@@ -3,16 +3,20 @@
 package javax.persistence;
 
 import java.lang.annotation.Target;
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This annotation is used to define one or more SqlResultSetMapping
+ * Is used to define one or more {@link SqlResultSetMapping} annotations.
  *
- * @author Emmanuel Bernard
+ * @since Java Persistence 1.0
  */
-@Target({ElementType.TYPE}) @Retention(RetentionPolicy.RUNTIME)
+@Target({ TYPE })
+@Retention(RUNTIME)
 public @interface SqlResultSetMappings {
+	/**
+	 * One or more <code>SqlResultSetMapping</code> annotations.
+	 */
 	SqlResultSetMapping[] value();
 }

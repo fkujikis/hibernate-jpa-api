@@ -2,28 +2,34 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence;
 
-import java.lang.annotation.ElementType;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
 
 /**
- * Expresses a dependency on an EntityManagerFactory.
+ * Expresses a dependency on an {@link EntityManagerFactory} and its
+ * associated persistence unit.
  *
- * @author <a href="mailto:bill@jboss.org">Bill Burke</a>
+ * @since Java Persistence 1.0
  */
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
-@Retention(RetentionPolicy.RUNTIME)
+@Target({ TYPE, METHOD, FIELD })
+@Retention(RUNTIME)
 public @interface PersistenceUnit {
 	/**
-	 * The name by which the entity manager factory is to be accessed in the environment
-	 * referencing context, and is not needed when dependency injection is used.
+	 * (Optional) The name by which the entity manager factory is to be accessed
+	 * in the environment referencing context;  not needed when
+	 * dependency injection is used.
 	 */
 	String name() default "";
+
 	/**
-	 * The name of the persistence unit as defined in the persistence.xml file. If specified, the
-	 * persistence unit for the entity manager factory that is accessible in JNDI must have the
-	 * same name.
+	 * (Optional) The name of the persistence unit as defined in the
+	 * <code>persistence.xml</code> file. If specified, the
+	 * persistence unit for the entity manager factory that is
+	 * accessible in JNDI must have the same name.
 	 */
 	String unitName() default "";
 }

@@ -2,14 +2,16 @@
 // EJB3 Specification Copyright 2004-2009 Sun Microsystems, Inc.
 package javax.persistence.metamodel;
 
+import java.util.Set;
+
 /**
- * Instances of the type IdentifiableType represent entity or
+ * Instances of the type <code>IdentifiableType</code> represent entity or
  * mapped superclass types.
  *
  * @param <X> The represented entity or mapped superclass type.
+ * @since Java Persistence 2.0
  */
 public interface IdentifiableType<X> extends ManagedType<X> {
-
 	/**
 	 * Return the attribute that corresponds to the id attribute of
 	 * the entity or mapped superclass.
@@ -28,7 +30,8 @@ public interface IdentifiableType<X> extends ManagedType<X> {
 	 * Return the attribute that corresponds to the id attribute
 	 * declared by the entity or mapped superclass.
 	 *
-	 * @param type the type of the represented declared id attribute
+	 * @param type the type of the represented declared
+	 * id attribute
 	 *
 	 * @return declared id attribute
 	 *
@@ -70,25 +73,26 @@ public interface IdentifiableType<X> extends ManagedType<X> {
 	 * specific mapped superclass or entity extended by the entity
 	 * or mapped superclass.
 	 *
-	 * @return supertype of identifiable type or null if no such supertype
+	 * @return supertype of identifiable type or null if no
+	 *         such supertype
 	 */
 	IdentifiableType<? super X> getSupertype();
 
 	/**
-	 * Whether or not the identifiable type has an id attribute.
+	 * Whether the identifiable type has a single id attribute.
 	 * Returns true for a simple id or embedded id; returns false
 	 * for an idclass.
 	 *
-	 * @return boolean indicating whether or not the identifiable
-	 * type has a single id attribute
+	 * @return boolean indicating whether the identifiable
+	 *         type has a single id attribute
 	 */
 	boolean hasSingleIdAttribute();
 
 	/**
-	 * Whether or not the identifiable type has a version attribute.
+	 * Whether the identifiable type has a version attribute.
 	 *
-	 * @return boolean indicating whether or not the identifiable
-	 * type has a version attribute
+	 * @return boolean indicating whether the identifiable
+	 *         type has a version attribute
 	 */
 	boolean hasVersionAttribute();
 
@@ -101,7 +105,7 @@ public interface IdentifiableType<X> extends ManagedType<X> {
 	 * @throws IllegalArgumentException if the identifiable type
 	 * does not have an id class
 	 */
-	java.util.Set<SingularAttribute<? super X, ?>> getIdClassAttributes();
+	Set<SingularAttribute<? super X, ?>> getIdClassAttributes();
 
 	/**
 	 * Return the type that represents the type of the id.
@@ -110,4 +114,3 @@ public interface IdentifiableType<X> extends ManagedType<X> {
 	 */
 	Type<?> getIdType();
 }
-

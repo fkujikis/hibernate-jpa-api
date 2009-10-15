@@ -73,12 +73,12 @@ public class Persistence {
 			public boolean isLoaded(Object entity, String attributeName) {
 				List<PersistenceProvider> providers = Persistence.getProviders();
 				for ( PersistenceProvider provider : providers ) {
-					final LoadState state = provider.isLoadedWithoutReference( entity, attributeName );
+					final LoadState state = provider.getProviderUtil().isLoadedWithoutReference( entity, attributeName );
 					if ( state == LoadState.UNKNOWN ) continue;
 					return state == LoadState.LOADED;
 				}
 				for ( PersistenceProvider provider : providers ) {
-					final LoadState state = provider.isLoadedWithReference( entity, attributeName );
+					final LoadState state = provider.getProviderUtil().isLoadedWithReference( entity, attributeName );
 					if ( state == LoadState.UNKNOWN ) continue;
 					return state == LoadState.LOADED;
 				}
@@ -88,7 +88,7 @@ public class Persistence {
 			public boolean isLoaded(Object object) {
 				List<PersistenceProvider> providers = Persistence.getProviders();
 				for ( PersistenceProvider provider : providers ) {
-					final LoadState state = provider.isLoaded( object );
+					final LoadState state = provider.getProviderUtil().isLoaded( object );
 					if ( state == LoadState.UNKNOWN ) continue;
 					return state == LoadState.LOADED;
 				}
