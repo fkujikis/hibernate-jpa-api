@@ -15,8 +15,10 @@ import javax.persistence.spi.PersistenceProviderResolverHolder;
  */
 public class Persistence {
 
-	public static String PERSISTENCE_PROVIDER = PersistenceProvider.class.getName();
+	@Deprecated
+	public static final String PERSISTENCE_PROVIDER = "javax.persistence.spi.PeristenceProvider";
 
+	@Deprecated
 	protected static final Set<PersistenceProvider> providers = new HashSet<PersistenceProvider>();
 
 	/**

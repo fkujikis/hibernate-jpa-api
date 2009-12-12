@@ -1,15 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.hibernate.java-persistence</groupId>
-    <artifactId>jpa-api</artifactId>
+    <groupId>org.hibernate.javax.persistence</groupId>
+    <artifactId>hibernate-jpa-2.0-api</artifactId>
     <packaging>jar</packaging>
-    <version>2.0.Beta-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
-    <name>JPA API (developmental)</name>
+    <name>JPA 2.0 API</name>
     <description>
-        Hibernate developmental JSR 317 (Java Persistence API 2.0) contracts.  Used to
-        allow incremental implementation of features on the way to full JPA 2.0 support.
+        Hibernate definition of the Java Persistence 2.0 (JSR 317) API.
     </description>
 
     <organization>
