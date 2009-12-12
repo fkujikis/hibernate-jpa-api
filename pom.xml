@@ -4,7 +4,7 @@
     <groupId>org.hibernate.javax.persistence</groupId>
     <artifactId>hibernate-jpa-2.0-api</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.0-CR-1</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <name>JPA 2.0 API</name>
     <description>
@@ -24,8 +24,8 @@
     </licenses>
 
     <scm>
-        <connection>scm:svn:https://svn.jboss.org/repos/hibernate/jpa-api/tags/hibernate-jpa-2.0-api-1.0.0-CR-1</connection>
-        <url>http://fisheye.jboss.org/browse/Hibernate/jpa-api/tags/hibernate-jpa-2.0-api-1.0.0-CR-1</url>
+        <connection>scm:svn:https://svn.jboss.org/repos/hibernate/jpa-api/trunk</connection>
+        <url>http://fisheye.jboss.org/browse/Hibernate/jpa-api/trunk</url>
     </scm>
 
     <developers>
