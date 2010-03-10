@@ -101,7 +101,7 @@
                                 <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
                                 <Implementation-Version>${pom.version}</Implementation-Version>
                                 <Implementation-Vendor>hibernate.org</Implementation-Vendor>
-                                <Implementation-Title>JAP API</Implementation-Title>
+                                <Implementation-Title>JPA API</Implementation-Title>
                             </manifestEntries>
                         </archive>
                     </configuration>
